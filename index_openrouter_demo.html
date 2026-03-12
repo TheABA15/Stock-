@@ -1,0 +1,2387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestión de Mantenimiento Industrial</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #f7f7f5;
+  --bg2:       #efefec;
+  --surface:   #ffffff;
+  --surface2:  #f9f9f7;
+  --border:    #e8e8e3;
+  --border2:   #d8d8d0;
+  --red:       #d92b2b;
+  --red-light: #fef2f2;
+  --red-mid:   #fee2e2;
+  --red-dark:  #b91c1c;
+  --blue:      #2563eb;
+  --blue-light:#eff6ff;
+  --green:     #16a34a;
+  --green-light:#f0fdf4;
+  --amber:     #d97706;
+  --amber-light:#fffbeb;
+  --text:      #1a1a18;
+  --text2:     #6b6b63;
+  --text3:     #a8a89e;
+  --shadow:    0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+  --shadow-lg: 0 20px 40px rgba(0,0,0,.12), 0 8px 16px rgba(0,0,0,.06);
+  --font-head: 'Bricolage Grotesque', sans-serif;
+  --font-body: 'Instrument Sans', sans-serif;
+  --r:         12px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  min-height:100vh;
+  font-size:14px;
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+
+/* ══════════════════════════════
+   LOGIN
+══════════════════════════════ */
+#login-screen{
+  position:fixed;inset:0;z-index:1000;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+}
+.login-bg-deco{
+  position:absolute;top:0;right:0;
+  width:50%;height:100%;
+  background:linear-gradient(135deg,var(--red) 0%,var(--red-dark) 100%);
+  clip-path:polygon(18% 0,100% 0,100% 100%,0 100%);
+  opacity:.06;
+  pointer-events:none;
+}
+
+.login-card{
+  width:420px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:44px 48px;
+  box-shadow:var(--shadow-lg);
+  animation:slideUp .5s ease both;
+  position:relative;z-index:1;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+.login-mark{
+  display:inline-flex;align-items:center;gap:10px;
+  margin-bottom:28px;
+}
+.login-mark .dot{
+  width:32px;height:32px;border-radius:9px;
+  background:var(--red);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 12px rgba(217,43,43,.3);
+}
+.login-mark .dot svg{width:16px;height:16px;fill:white;}
+.login-mark .name{
+  font-family:var(--font-head);font-size:22px;font-weight:800;
+  letter-spacing:-1px;color:var(--text);
+}
+
+.login-h{font-family:var(--font-head);font-size:26px;font-weight:700;letter-spacing:-.5px;margin-bottom:6px;}
+.login-sub{color:var(--text2);font-size:13px;margin-bottom:32px;}
+
+.f-label{display:block;font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--text2);margin-bottom:7px;}
+.f-input{
+  width:100%;background:var(--surface2);
+  border:1.5px solid var(--border);border-radius:10px;
+  color:var(--text);font-family:var(--font-body);font-size:14px;
+  padding:11px 14px;outline:none;margin-bottom:18px;
+  transition:border-color .2s,box-shadow .2s;
+}
+.f-input:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(217,43,43,.08);}
+
+.login-btn{
+  width:100%;padding:13px;margin-top:4px;
+  background:var(--red);border:none;border-radius:10px;
+  color:white;font-family:var(--font-head);font-size:14px;font-weight:700;
+  letter-spacing:.3px;cursor:pointer;
+  box-shadow:0 4px 16px rgba(217,43,43,.25);
+  transition:background .15s,transform .1s,box-shadow .15s;
+}
+.login-btn:hover{background:var(--red-dark);box-shadow:0 6px 20px rgba(217,43,43,.3);}
+.login-btn:active{transform:scale(.98);}
+
+.login-demos{margin-top:28px;padding-top:24px;border-top:1px solid var(--border);}
+.login-demos p{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+.dpill{
+  display:inline-flex;align-items:center;gap:7px;
+  border:1.5px solid var(--border);border-radius:8px;
+  padding:6px 11px;font-size:12px;color:var(--text2);
+  cursor:pointer;margin:3px;background:var(--surface2);
+  transition:all .15s;
+}
+.dpill:hover{border-color:var(--red);color:var(--red);background:var(--red-light);}
+.dpill .rdot{width:6px;height:6px;border-radius:50%;}
+
+.login-err{
+  background:var(--red-light);border:1px solid var(--red-mid);
+  border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red);
+  margin-bottom:16px;display:none;
+}
+
+/* ══════════════════════════════
+   LAYOUT
+══════════════════════════════ */
+#app{display:none;min-height:100vh;}
+
+.sidebar{
+  position:fixed;left:0;top:0;bottom:0;width:232px;
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;z-index:100;
+}
+
+.sbar-logo{
+  padding:20px 20px 16px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+}
+.sbar-logo .logo-dot{
+  width:30px;height:30px;border-radius:8px;
+  background:var(--red);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 8px rgba(217,43,43,.25);flex-shrink:0;
+}
+.sbar-logo .logo-dot svg{width:15px;height:15px;fill:white;}
+.sbar-logo .logo-name{
+  font-family:var(--font-head);font-size:18px;font-weight:800;
+  letter-spacing:-.8px;color:var(--text);
+}
+.sbar-logo .logo-tag{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;}
+
+.sbar-nav{flex:1;padding:14px 10px;overflow-y:auto;}
+.nav-sec{
+  font-size:9.5px;font-weight:600;letter-spacing:1.2px;
+  text-transform:uppercase;color:var(--text3);
+  padding:0 10px;margin:16px 0 6px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 10px;border-radius:9px;cursor:pointer;
+  font-size:13px;font-weight:500;color:var(--text2);
+  transition:all .12s;margin-bottom:1px;
+}
+.nav-item:hover{background:var(--bg2);color:var(--text);}
+.nav-item.active{background:var(--red-light);color:var(--red);font-weight:600;}
+.nav-item .ni{font-size:15px;width:18px;text-align:center;flex-shrink:0;}
+.nbadge{
+  margin-left:auto;background:var(--red);color:white;
+  font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;
+}
+.nbadge-warn{background:var(--amber);}
+
+.sbar-foot{padding:14px;border-top:1px solid var(--border);}
+.user-pill-bar{
+  display:flex;align-items:center;gap:9px;
+  background:var(--surface2);border:1.5px solid var(--border);
+  border-radius:11px;padding:10px 12px;
+}
+.uavatar{
+  width:30px;height:30px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-head);font-size:12px;font-weight:700;flex-shrink:0;
+}
+.uname{font-size:13px;font-weight:600;color:var(--text);line-height:1.2;}
+.urole{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;}
+.logout-btn{
+  margin-left:auto;background:none;border:none;
+  color:var(--text3);cursor:pointer;font-size:15px;
+  padding:4px;border-radius:6px;transition:all .15s;
+}
+.logout-btn:hover{color:var(--red);background:var(--red-light);}
+
+/* ══════════════════════════════
+   MAIN
+══════════════════════════════ */
+.main{margin-left:232px;min-height:100vh;}
+
+.topbar{
+  padding:0 28px;height:58px;
+  display:flex;align-items:center;gap:14px;
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:50;
+  background:rgba(247,247,245,.92);
+  backdrop-filter:blur(10px);
+}
+.topbar-title{
+  font-family:var(--font-head);font-size:17px;font-weight:700;
+  letter-spacing:-.3px;color:var(--text);
+}
+.topbar-date{margin-left:auto;font-size:12px;color:var(--text3);}
+
+.content{padding:28px;}
+
+/* ══════════════════════════════
+   VIEWS
+══════════════════════════════ */
+.view{display:none;}
+.view.active{display:block;animation:fadeIn .25s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* ══════════════════════════════
+   STATS GRID
+══════════════════════════════ */
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:14px;margin-bottom:24px;
+}
+.stat-card{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--r);padding:18px 20px;
+  box-shadow:var(--shadow);transition:box-shadow .2s,transform .2s;
+}
+.stat-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px);}
+.stat-icon{
+  width:36px;height:36px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;margin-bottom:12px;
+}
+.stat-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-bottom:6px;}
+.stat-val{
+  font-family:var(--font-head);font-size:34px;font-weight:800;
+  letter-spacing:-2px;line-height:1;
+}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:5px;}
+
+.stat-red .stat-icon{background:var(--red-light);}
+.stat-red .stat-val{color:var(--red);}
+.stat-blue .stat-icon{background:var(--blue-light);}
+.stat-blue .stat-val{color:var(--blue);}
+.stat-green .stat-icon{background:var(--green-light);}
+.stat-green .stat-val{color:var(--green);}
+.stat-amber .stat-icon{background:var(--amber-light);}
+.stat-amber .stat-val{color:var(--amber);}
+
+/* ══════════════════════════════
+   PANEL / CARDS
+══════════════════════════════ */
+.panel{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--r);padding:20px;
+  box-shadow:var(--shadow);
+}
+.panel-title{
+  font-family:var(--font-head);font-size:13px;font-weight:700;
+  letter-spacing:.2px;color:var(--text2);text-transform:uppercase;
+  letter-spacing:1px;margin-bottom:14px;
+}
+.two-col{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;}
+@media(max-width:900px){.two-col{grid-template-columns:1fr;}}
+
+/* ══════════════════════════════
+   BUTTONS
+══════════════════════════════ */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 15px;border-radius:8px;
+  font-family:var(--font-body);font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .12s;border:none;white-space:nowrap;
+}
+.btn-red{background:var(--red);color:white;box-shadow:0 2px 8px rgba(217,43,43,.2);}
+.btn-red:hover{background:var(--red-dark);box-shadow:0 4px 12px rgba(217,43,43,.25);}
+.btn-outline{background:transparent;color:var(--text2);border:1.5px solid var(--border);}
+.btn-outline:hover{border-color:var(--red);color:var(--red);background:var(--red-light);}
+.btn-ghost{background:var(--bg2);color:var(--text2);border:1.5px solid transparent;}
+.btn-ghost:hover{background:var(--bg);border-color:var(--border2);}
+.btn-danger-soft{background:var(--red-light);color:var(--red);border:1.5px solid var(--red-mid);}
+.btn-danger-soft:hover{background:var(--red-mid);}
+.btn-sm{padding:5px 11px;font-size:12px;border-radius:7px;}
+.btn-xs{padding:4px 9px;font-size:11px;border-radius:6px;}
+
+/* ══════════════════════════════
+   BADGES
+══════════════════════════════ */
+.badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 9px;border-radius:20px;
+  font-size:11px;font-weight:600;letter-spacing:.3px;
+  text-transform:uppercase;
+}
+.badge::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.b-green{background:var(--green-light);color:var(--green);}
+.b-green::before{background:var(--green);}
+.b-blue{background:var(--blue-light);color:var(--blue);}
+.b-blue::before{background:var(--blue);}
+.b-red{background:var(--red-light);color:var(--red);}
+.b-red::before{background:var(--red);}
+.b-amber{background:var(--amber-light);color:var(--amber);}
+.b-amber::before{background:var(--amber);}
+.b-gray{background:var(--bg2);color:var(--text2);}
+.b-gray::before{background:var(--text3);}
+
+/* ══════════════════════════════
+   WORK ORDER CARD
+══════════════════════════════ */
+.wo-card{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--r);padding:16px 18px;margin-bottom:8px;
+  box-shadow:var(--shadow);
+  transition:border-color .15s,box-shadow .15s;cursor:pointer;
+}
+.wo-card:hover{border-color:var(--border2);box-shadow:var(--shadow-md);}
+.wo-card.critical{border-left:3px solid var(--red);}
+.wo-card.urgent{border-left:3px solid var(--amber);}
+.wo-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.wo-id{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.8px;}
+.wo-title{font-family:var(--font-head);font-size:15px;font-weight:700;flex:1;color:var(--text);}
+.wo-desc{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:12px;}
+.wo-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.wo-meta{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px;}
+
+/* Piezas usadas */
+.parts-tag{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--red-light);border:1px solid var(--red-mid);
+  border-radius:6px;padding:2px 8px;font-size:11px;color:var(--red);font-weight:600;
+}
+
+/* ══════════════════════════════
+   STOCK CARD
+══════════════════════════════ */
+.stock-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+  gap:12px;
+}
+.stock-card{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--r);padding:16px 18px;
+  box-shadow:var(--shadow);cursor:pointer;
+  transition:all .15s;
+}
+.stock-card:hover{border-color:var(--border2);box-shadow:var(--shadow-md);transform:translateY(-1px);}
+.stock-card.s-critical{border-color:var(--red-mid);background:var(--red-light);}
+.stock-card.s-warn{border-color:#fde68a;}
+.s-ref{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.8px;margin-bottom:4px;}
+.s-name{font-family:var(--font-head);font-size:14px;font-weight:700;margin-bottom:12px;color:var(--text);}
+.s-qty{font-family:var(--font-head);font-size:32px;font-weight:800;letter-spacing:-1.5px;line-height:1;}
+.s-unit{font-size:13px;color:var(--text2);margin-left:3px;}
+.s-bar-wrap{background:var(--bg2);border-radius:4px;height:4px;margin:10px 0;overflow:hidden;}
+.s-bar{height:100%;border-radius:4px;transition:width .4s;}
+.s-foot{display:flex;justify-content:space-between;align-items:center;}
+.s-loc{font-size:11px;color:var(--text3);}
+
+/* ══════════════════════════════
+   IDEA CARD
+══════════════════════════════ */
+.idea-card{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--r);padding:18px 20px;
+  margin-bottom:8px;box-shadow:var(--shadow);
+  position:relative;overflow:hidden;
+}
+.idea-card::after{
+  content:'';position:absolute;
+  left:0;top:0;bottom:0;width:3px;
+}
+.idea-card.ic-pending::after{background:var(--amber);}
+.idea-card.ic-approved::after{background:var(--green);}
+.idea-card.ic-progress::after{background:var(--blue);}
+.idea-card.ic-rejected::after{background:var(--text3);}
+.idea-title{font-family:var(--font-head);font-size:15px;font-weight:700;margin-bottom:4px;}
+.idea-meta{font-size:11px;color:var(--text3);margin-bottom:10px;}
+.idea-desc{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:14px;}
+.upvote-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--bg2);border:1.5px solid var(--border);
+  border-radius:7px;padding:5px 11px;
+  font-size:12px;font-weight:600;color:var(--text2);
+  cursor:pointer;transition:all .15s;
+}
+.upvote-btn:hover,.upvote-btn.voted{
+  border-color:var(--red);color:var(--red);background:var(--red-light);
+}
+
+/* ══════════════════════════════
+   TABLE
+══════════════════════════════ */
+.table-wrap{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);}
+table{width:100%;border-collapse:collapse;}
+thead th{
+  padding:11px 16px;font-size:10.5px;font-weight:600;
+  color:var(--text2);text-transform:uppercase;letter-spacing:.8px;
+  text-align:left;border-bottom:1.5px solid var(--border);
+  background:var(--surface2);
+}
+tbody tr{border-bottom:1px solid var(--border);transition:background .12s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--surface2);}
+tbody td{padding:12px 16px;font-size:13px;}
+
+/* ══════════════════════════════
+   MODAL
+══════════════════════════════ */
+.modal-overlay{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,.35);backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;
+  padding:20px;
+}
+.modal-overlay.open{display:flex;}
+.modal{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:18px;padding:28px 32px;
+  width:540px;max-width:100%;
+  max-height:90vh;overflow-y:auto;
+  box-shadow:var(--shadow-lg);
+  animation:modalIn .2s ease;
+}
+@keyframes modalIn{from{opacity:0;transform:scale(.96)translateY(8px);}to{opacity:1;transform:scale(1)translateY(0);}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.modal-title{font-family:var(--font-head);font-size:18px;font-weight:700;letter-spacing:-.3px;}
+.modal-close{
+  background:var(--bg2);border:1.5px solid var(--border);
+  color:var(--text2);cursor:pointer;
+  width:32px;height:32px;border-radius:8px;font-size:14px;
+  transition:all .15s;
+}
+.modal-close:hover{background:var(--red-light);border-color:var(--red-mid);color:var(--red);}
+
+/* ══════════════════════════════
+   FORM
+══════════════════════════════ */
+.fg{margin-bottom:16px;}
+.flabel{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);margin-bottom:7px;}
+.finput,.fselect,.ftextarea{
+  width:100%;background:var(--surface2);
+  border:1.5px solid var(--border);border-radius:9px;
+  color:var(--text);font-family:var(--font-body);font-size:14px;
+  padding:10px 13px;outline:none;transition:border-color .15s,box-shadow .15s;
+}
+.finput:focus,.fselect:focus,.ftextarea:focus{
+  border-color:var(--red);box-shadow:0 0 0 3px rgba(217,43,43,.07);
+}
+.fselect option{background:white;}
+.ftextarea{resize:vertical;min-height:80px;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.factions{display:flex;gap:8px;justify-content:flex-end;margin-top:22px;padding-top:18px;border-top:1.5px solid var(--border);}
+
+/* ══════════════════════════════
+   FILTROS
+══════════════════════════════ */
+.filter-bar{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+.fchip{
+  padding:6px 13px;border-radius:8px;font-size:12px;font-weight:500;
+  cursor:pointer;border:1.5px solid var(--border);
+  color:var(--text2);background:var(--surface);
+  transition:all .12s;
+}
+.fchip.active{background:var(--red-light);border-color:var(--red-mid);color:var(--red);font-weight:600;}
+.fchip:hover:not(.active){background:var(--bg2);}
+.search-box{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:9px;color:var(--text);
+  font-family:var(--font-body);font-size:13px;
+  padding:7px 13px;outline:none;
+  transition:border-color .15s;min-width:200px;
+}
+.search-box:focus{border-color:var(--red);}
+
+/* ══════════════════════════════
+   CALENDAR STRIP
+══════════════════════════════ */
+.cal-strip{display:flex;gap:7px;margin-bottom:20px;overflow-x:auto;padding-bottom:4px;}
+.cal-day{
+  flex-shrink:0;width:52px;
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:10px;padding:9px 6px;text-align:center;cursor:pointer;
+  transition:all .15s;
+}
+.cal-day:hover{border-color:var(--border2);}
+.cal-day.today{background:var(--red-light);border-color:var(--red-mid);}
+.cal-day.haswork{border-color:var(--blue);background:var(--blue-light);}
+.cal-day.sel{border-color:var(--red);background:var(--red-light);}
+.cd-name{font-size:9.5px;color:var(--text3);text-transform:uppercase;font-weight:600;}
+.cd-num{font-family:var(--font-head);font-size:18px;font-weight:800;letter-spacing:-1px;color:var(--text);}
+.cal-day.today .cd-num,.cal-day.sel .cd-num{color:var(--red);}
+.cd-dot{width:4px;height:4px;border-radius:50%;background:var(--blue);margin:3px auto 0;}
+
+/* ══════════════════════════════
+   PARTS SELECTOR (modal)
+══════════════════════════════ */
+.parts-list{
+  border:1.5px solid var(--border);border-radius:9px;
+  overflow:hidden;margin-top:4px;
+}
+.part-row{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 14px;border-bottom:1px solid var(--border);
+  font-size:13px;
+}
+.part-row:last-child{border-bottom:none;}
+.part-row:hover{background:var(--surface2);}
+.part-name{flex:1;font-weight:500;}
+.part-stock{font-size:12px;color:var(--text2);min-width:60px;text-align:right;}
+.part-qty-input{
+  width:60px;background:var(--surface2);
+  border:1.5px solid var(--border);border-radius:7px;
+  padding:5px 8px;font-size:13px;font-family:var(--font-body);
+  color:var(--text);outline:none;text-align:center;
+  transition:border-color .15s;
+}
+.part-qty-input:focus{border-color:var(--red);}
+.part-check{
+  width:18px;height:18px;accent-color:var(--red);cursor:pointer;
+  flex-shrink:0;
+}
+
+/* ══════════════════════════════
+   ACTIVITY
+══════════════════════════════ */
+.act-item{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.act-item:last-child{border-bottom:none;}
+.act-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0;}
+.act-text{font-size:12px;color:var(--text2);line-height:1.5;}
+.act-text strong{color:var(--text);}
+.act-time{font-size:10px;color:var(--text3);margin-top:1px;}
+
+/* ══════════════════════════════
+   AVATAR
+══════════════════════════════ */
+.avatar{
+  width:26px;height:26px;border-radius:7px;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;font-family:var(--font-head);flex-shrink:0;
+}
+
+/* ══════════════════════════════
+   EMPTY STATE
+══════════════════════════════ */
+.empty{text-align:center;padding:56px 20px;color:var(--text3);}
+.empty .eico{font-size:44px;margin-bottom:14px;opacity:.4;}
+.empty p{font-size:13px;}
+
+/* ══════════════════════════════
+   NOTIFICATION
+══════════════════════════════ */
+.notif{
+  position:fixed;bottom:22px;right:22px;
+  background:var(--text);color:white;
+  border-radius:11px;padding:12px 18px;
+  font-size:13px;font-weight:500;
+  z-index:9999;transform:translateY(100px);opacity:0;
+  transition:transform .3s,opacity .3s;
+  box-shadow:var(--shadow-lg);max-width:300px;
+}
+.notif.show{transform:translateY(0);opacity:1;}
+
+/* ══════════════════════════════
+   PROGRESS BAR
+══════════════════════════════ */
+.pbar{background:var(--bg2);border-radius:4px;height:6px;overflow:hidden;}
+.pbar-fill{height:100%;border-radius:4px;transition:width .4s;}
+
+/* ══════════════════════════════
+   USER ROWS
+══════════════════════════════ */
+.urow{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 16px;border-bottom:1px solid var(--border);
+  transition:background .12s;
+}
+.urow:last-child{border-bottom:none;}
+.urow:hover{background:var(--surface2);}
+
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.section-title{font-family:var(--font-head);font-size:16px;font-weight:700;letter-spacing:-.3px;}
+
+/* highlight de stock restado */
+@keyframes stockPulse{
+  0%{background:rgba(217,43,43,.15);}
+  100%{background:transparent;}
+}
+.stock-updated{animation:stockPulse 1.5s ease;}
+
+/* tag */
+.tag{
+  display:inline-flex;align-items:center;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:5px;padding:2px 8px;
+  font-size:11px;color:var(--text2);
+}
+
+/* turno selector */
+.turno-opt{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  padding:9px 6px;border-radius:9px;cursor:pointer;
+  border:1.5px solid var(--border);background:var(--surface2);
+  font-size:13px;font-weight:500;color:var(--text2);
+  transition:all .15s;user-select:none;text-align:center;
+}
+.turno-opt:hover{border-color:var(--border2);color:var(--text);}
+.turno-opt.selected{border-color:var(--red);background:var(--red-light);color:var(--red);font-weight:600;}
+
+/* turno badge en tarjetas */
+.turno-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:6px;padding:3px 9px;
+  font-size:11px;font-weight:600;color:var(--text2);
+}
+.turno-badge.mañana{background:#fefce8;border-color:#fde68a;color:#92400e;}
+.turno-badge.tarde{background:#fff7ed;border-color:#fed7aa;color:#9a3412;}
+.turno-badge.noche{background:#eef2ff;border-color:#c7d2fe;color:#3730a3;}
+
+/* closed-by chip en tarjetas */
+.closed-by{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--green-light);border:1px solid #bbf7d0;
+  border-radius:6px;padding:3px 10px;
+  font-size:11px;font-weight:600;color:var(--green);
+}
+
+
+/* ══════════════════════════════
+   AI ASSISTANT
+══════════════════════════════ */
+.ai-shell{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;margin-bottom:18px;}
+@media(max-width:1000px){.ai-shell{grid-template-columns:1fr;}}
+.ai-panel{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;}
+.ai-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,var(--surface),var(--surface2));}
+.ai-title-wrap{display:flex;align-items:center;gap:10px;}
+.ai-badge-dot{width:34px;height:34px;border-radius:10px;background:var(--red-light);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--red);}
+.ai-title{font-family:var(--font-head);font-size:15px;font-weight:800;letter-spacing:-.3px;}
+.ai-sub{font-size:12px;color:var(--text3);margin-top:2px;}
+.ai-config{display:grid;grid-template-columns:1fr 180px;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border);background:var(--surface2);}
+@media(max-width:700px){.ai-config{grid-template-columns:1fr;}}
+.ai-chat{height:360px;overflow-y:auto;padding:16px 18px;background:var(--surface);display:flex;flex-direction:column;gap:10px;}
+.ai-msg{max-width:88%;padding:11px 13px;border-radius:14px;font-size:13px;line-height:1.55;white-space:pre-wrap;}
+.ai-msg.user{align-self:flex-end;background:var(--red);color:white;border-bottom-right-radius:6px;}
+.ai-msg.assistant{align-self:flex-start;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-bottom-left-radius:6px;}
+.ai-msg.system{align-self:center;background:var(--blue-light);color:var(--blue);border:1px solid #bfdbfe;font-size:12px;max-width:100%;}
+.ai-actions{padding:14px 18px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:flex-end;background:var(--surface);}
+.ai-input{flex:1;min-height:48px;max-height:120px;resize:vertical;}
+.ai-side{padding:18px;display:flex;flex-direction:column;gap:14px;}
+.ai-tip{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:13px 14px;}
+.ai-tip h4{font-family:var(--font-head);font-size:13px;margin-bottom:7px;}
+.ai-tip p,.ai-tip li{font-size:12px;color:var(--text2);line-height:1.55;}
+.ai-examples{display:flex;flex-wrap:wrap;gap:8px;}
+.ai-chip{padding:7px 10px;border-radius:999px;border:1.5px solid var(--border);background:var(--surface);font-size:12px;color:var(--text2);cursor:pointer;transition:all .12s;}
+.ai-chip:hover{border-color:var(--red);color:var(--red);background:var(--red-light);}
+.ai-status{font-size:12px;color:var(--text3);}
+
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     LOGIN
+══════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-bg-deco"></div>
+  <div class="login-card">
+    <div class="login-mark">
+      <img src="https://www.mrcsoluciones.es/wp-content/uploads/2024/03/MRC-logo-H-300-6-1.png" alt="Logo" style="height:52px;max-width:210px;object-fit:contain;">
+    </div>
+    <div class="login-h">Bienvenido</div>
+    <div class="login-sub">Gestión integral de mantenimiento industrial</div>
+
+    <div id="login-err" class="login-err">Usuario o contraseña incorrectos</div>
+
+    <label class="f-label">Usuario</label>
+    <input id="l-user" class="f-input" type="text" placeholder="nombre.apellido" autocomplete="off">
+
+    <label class="f-label">Contraseña</label>
+    <input id="l-pass" class="f-input" type="password" placeholder="••••••••">
+
+    <button class="login-btn" onclick="doLogin()">Acceder →</button>
+
+    <div class="login-demos">
+      <p>Acceso rápido demo</p>
+      <span class="dpill" onclick="quickLogin('admin','admin123')"><span class="rdot" style="background:#d92b2b"></span>Administrador</span>
+      <span class="dpill" onclick="quickLogin('jefe','jefe123')"><span class="rdot" style="background:#2563eb"></span>Jefe de Turno</span>
+      <span class="dpill" onclick="quickLogin('carlos','op123')"><span class="rdot" style="background:#d97706"></span>Carlos (Operario)</span>
+      <span class="dpill" onclick="quickLogin('laura','op123')"><span class="rdot" style="background:#7c3aed"></span>Laura (Operario)</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     APP
+══════════════════════════════ -->
+<div id="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sbar-logo" style="justify-content:center;padding:14px 16px;">
+      <img src="https://www.mrcsoluciones.es/wp-content/uploads/2024/03/MRC-logo-H-300-6-1.png" alt="Logo" style="max-height:38px;max-width:190px;object-fit:contain;">
+    </div>
+
+    <nav class="sbar-nav">
+      <div class="nav-sec">Principal</div>
+      <div class="nav-item active" onclick="nav('dashboard',this)">
+        <span class="ni">📊</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="nav('trabajos',this)">
+        <span class="ni">🔧</span> Órdenes de Trabajo
+        <span class="nbadge" id="badge-ot">0</span>
+      </div>
+      <div class="nav-item" onclick="nav('planning',this)">
+        <span class="ni">📅</span> Planificación
+      </div>
+
+      <div class="nav-sec">Recursos</div>
+      <div class="nav-item" onclick="nav('stock',this)">
+        <span class="ni">📦</span> Stock Recambios
+        <span class="nbadge nbadge-warn" id="badge-stock" style="display:none">!</span>
+      </div>
+
+      <div class="nav-sec admin-only" id="sec-admin">Administración</div>
+      <div class="nav-item admin-only" id="nav-users" onclick="nav('usuarios',this)">
+        <span class="ni">👥</span> Usuarios
+      </div>
+    </nav>
+
+    <div class="sbar-foot">
+      <div class="user-pill-bar">
+        <div class="uavatar" id="sb-avatar"></div>
+        <div>
+          <div class="uname" id="sb-name"></div>
+          <div class="urole" id="sb-role"></div>
+        </div>
+        <button class="logout-btn" onclick="logout()" title="Salir">⏻</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">Dashboard</div>
+      <div id="topbar-actions"></div>
+      <div class="topbar-date" id="topbar-date"></div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div id="view-dashboard" class="view active">
+        <div class="stats-grid">
+          <div class="stat-card stat-red">
+            <div class="stat-icon">⚡</div>
+            <div class="stat-label">Órdenes Activas</div>
+            <div class="stat-val" id="ds-act">0</div>
+            <div class="stat-sub">En progreso ahora</div>
+          </div>
+          <div class="stat-card stat-amber">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-label">Pendientes</div>
+            <div class="stat-val" id="ds-pend">0</div>
+            <div class="stat-sub">Sin iniciar</div>
+          </div>
+          <div class="stat-card stat-green">
+            <div class="stat-icon">✅</div>
+            <div class="stat-label">Completadas</div>
+            <div class="stat-val" id="ds-comp">0</div>
+            <div class="stat-sub">Total acumulado</div>
+          </div>
+          <div class="stat-card stat-blue">
+            <div class="stat-icon">🔩</div>
+            <div class="stat-label">Piezas Usadas</div>
+            <div class="stat-val" id="ds-parts">0</div>
+            <div class="stat-sub">Consumo total</div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="panel">
+            <div class="panel-title">Actividad reciente</div>
+            <div id="activity-feed"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div class="panel">
+              <div class="panel-title">Distribución órdenes</div>
+              <div id="dist-bars" style="display:flex;flex-direction:column;gap:10px"></div>
+            </div>
+            <div class="panel">
+              <div class="panel-title">⚠️ Stock crítico</div>
+              <div id="critical-stock"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TRABAJOS -->
+      <div id="view-trabajos" class="view">
+        <div class="filter-bar">
+          <input class="search-box" id="srch-ot" placeholder="🔍 Buscar orden..." oninput="renderTrabajos()">
+          <button class="fchip active" onclick="setF(this,'todos')" data-f="todos">Todos</button>
+          <button class="fchip" onclick="setF(this,'pendiente')" data-f="pendiente">Pendiente</button>
+          <button class="fchip" onclick="setF(this,'en progreso')" data-f="en progreso">En Progreso</button>
+          <button class="fchip" onclick="setF(this,'completado')" data-f="completado">Completado</button>
+          <button class="fchip" onclick="setF(this,'crítico')" data-f="crítico">Crítico</button>
+        </div>
+        <div id="ot-list"></div>
+      </div>
+
+      <!-- PLANNING -->
+      <div id="view-planning" class="view">
+        <div class="cal-strip" id="cal-strip"></div>
+        <div class="section-head">
+          <div class="section-title" id="plan-day-title">Trabajos del día</div>
+        </div>
+        <div id="plan-list"></div>
+      </div>
+
+      <!-- STOCK -->
+      <div id="view-stock" class="view">
+        <div class="filter-bar">
+          <input class="search-box" id="srch-stock" placeholder="🔍 Buscar recambio..." oninput="renderStock()">
+          <button class="fchip active" onclick="setSF(this,'todos')">Todos</button>
+          <button class="fchip" onclick="setSF(this,'bajo')">Stock Bajo</button>
+          <button class="fchip" onclick="setSF(this,'ok')">OK</button>
+        </div>
+        <div class="ai-shell">
+          <div class="ai-panel">
+            <div class="ai-head">
+              <div class="ai-title-wrap">
+                <div class="ai-badge-dot">🤖</div>
+                <div>
+                  <div class="ai-title">Asistente de recambios</div>
+                  <div class="ai-sub">Consulta ubicación, stock y referencias con lenguaje natural</div>
+                </div>
+              </div>
+              <div class="ai-status" id="ai-status">Modo local listo</div>
+            </div>
+            <div class="ai-config">
+              <input id="or-api-key" class="finput" type="password" placeholder="OpenRouter API Key (opcional para pruebas)" style="margin:0">
+              <input id="or-model" class="finput" type="text" value="openai/gpt-4o-mini" placeholder="Modelo OpenRouter" style="margin:0">
+            </div>
+            <div class="ai-chat" id="ai-chat"></div>
+            <div class="ai-actions">
+              <textarea id="ai-input" class="ftextarea ai-input" placeholder="Ej.: ¿Dónde está el filtro de aire FA-200?"></textarea>
+              <button class="btn btn-outline" onclick="clearAIChat()">Limpiar</button>
+              <button class="btn btn-red" id="ai-send-btn" onclick="sendAIMessage()">Preguntar</button>
+            </div>
+          </div>
+          <div class="ai-panel">
+            <div class="ai-side">
+              <div class="ai-tip">
+                <h4>Qué hace esta integración</h4>
+                <p>Busca primero en el inventario local de la app y, si configuras OpenRouter, redacta la respuesta con streaming en tiempo real usando los datos del stock cargado.</p>
+              </div>
+              <div class="ai-tip">
+                <h4>Ejemplos rápidos</h4>
+                <div class="ai-examples">
+                  <button class="ai-chip" onclick="askExample('¿Dónde está el filtro de aire FA-200?')">Ubicación filtro FA-200</button>
+                  <button class="ai-chip" onclick="askExample('¿Qué recambios tienen stock bajo?')">Stock bajo</button>
+                  <button class="ai-chip" onclick="askExample('Busca la referencia COR-B42')">Referencia COR-B42</button>
+                  <button class="ai-chip" onclick="askExample('¿Qué proveedor tiene el aceite hidráulico ISO 46?')">Proveedor aceite</button>
+                </div>
+              </div>
+              <div class="ai-tip">
+                <h4>Nota importante</h4>
+                <p>Esta demo permite probar la API directamente en el navegador, pero en producción conviene mover la llamada a tu backend para no exponer la clave.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="stock-grid" id="stock-grid"></div>
+      </div>
+
+      <!-- MEJORAS -->
+      <div id="view-mejoras" class="view">
+        <div class="filter-bar">
+          <button class="fchip active" onclick="setMF(this,'todas')">Todas</button>
+          <button class="fchip" onclick="setMF(this,'pendiente')">Pendiente</button>
+          <button class="fchip" onclick="setMF(this,'aprobada')">Aprobada</button>
+          <button class="fchip" onclick="setMF(this,'en progreso')">En Progreso</button>
+        </div>
+        <div id="mejoras-list"></div>
+      </div>
+
+      <!-- USUARIOS -->
+      <div id="view-usuarios" class="view">
+        <div class="table-wrap" id="users-wrap">
+          <div id="users-list"></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ══════════════════════════════
+     MODALES
+══════════════════════════════ -->
+
+<!-- Nueva/Editar OT -->
+<div class="modal-overlay" id="m-ot">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="m-ot-title">Nueva Orden de Trabajo</div>
+      <button class="modal-close" onclick="closeM('m-ot')">✕</button>
+    </div>
+    <div class="frow">
+      <div class="fg">
+        <label class="flabel">Título</label>
+        <input id="ot-titulo" class="finput" placeholder="Descripción breve">
+      </div>
+      <div class="fg">
+        <label class="flabel">Prioridad</label>
+        <select id="ot-prio" class="fselect">
+          <option value="normal">Normal</option>
+          <option value="urgente">Urgente</option>
+          <option value="crítico">Crítico</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg">
+      <label class="flabel">Descripción</label>
+      <textarea id="ot-desc" class="ftextarea" placeholder="Detalla el trabajo a realizar..."></textarea>
+    </div>
+    <div class="frow">
+      <div class="fg">
+        <label class="flabel">Zona / Equipo</label>
+        <input id="ot-zona" class="finput" placeholder="Cinta transportadora 3...">
+      </div>
+      <div class="fg">
+        <label class="flabel">Tipo</label>
+        <select id="ot-tipo" class="fselect">
+          <option>Preventivo</option>
+          <option>Correctivo</option>
+          <option>Predictivo</option>
+          <option>Mejora</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Campos solo visibles para Jefe / Admin -->
+    <div id="plan-fields">
+      <div style="display:flex;align-items:center;gap:8px;margin:16px 0 12px;padding-top:14px;border-top:1.5px dashed var(--border);">
+        <span style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text3)">🗓️ Planificación — Solo Jefe / Admin</span>
+      </div>
+
+      <!-- ASIGNAR + FECHA -->
+      <div class="frow">
+        <div class="fg">
+          <label class="flabel">Asignar a</label>
+          <select id="ot-asign" class="fselect"></select>
+        </div>
+        <div class="fg">
+          <label class="flabel">Fecha</label>
+          <input id="ot-fecha" class="finput" type="date">
+        </div>
+      </div>
+
+      <!-- TURNO -->
+      <div class="fg">
+        <label class="flabel">Turno</label>
+        <div style="display:flex;gap:8px;" id="turno-selector">
+          <label class="turno-opt" data-turno="mañana">
+            <input type="radio" name="ot-turno" value="mañana" style="display:none">
+            <span>🌅 Mañana</span>
+          </label>
+          <label class="turno-opt" data-turno="tarde">
+            <input type="radio" name="ot-turno" value="tarde" style="display:none">
+            <span>🌤️ Tarde</span>
+          </label>
+          <label class="turno-opt" data-turno="noche">
+            <input type="radio" name="ot-turno" value="noche" style="display:none">
+            <span>🌙 Noche</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- SELECTOR DE PIEZAS -->
+      <div class="fg">
+        <label class="flabel">🔩 Piezas / Recambios a usar</label>
+        <div class="parts-list" id="parts-selector"></div>
+        <div style="font-size:11px;color:var(--text3);margin-top:6px">
+          💡 Las cantidades se descontarán del stock al completar la orden
+        </div>
+      </div>
+    </div>
+
+    <div class="factions">
+      <button class="btn btn-outline" onclick="closeM('m-ot')">Cancelar</button>
+      <button class="btn btn-red" onclick="saveOT()">Guardar Orden</button>
+    </div>
+  </div>
+</div>
+
+<!-- Detalle OT (con botón de consumir piezas) -->
+<div class="modal-overlay" id="m-detail">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="detail-title">Detalle Orden</div>
+      <button class="modal-close" onclick="closeM('m-detail')">✕</button>
+    </div>
+    <div id="detail-body"></div>
+  </div>
+</div>
+
+<!-- Nuevo Stock -->
+<div class="modal-overlay" id="m-stock">
+  <div class="modal" style="width:460px">
+    <div class="modal-head">
+      <div class="modal-title" id="m-stock-title">Nuevo Recambio</div>
+      <button class="modal-close" onclick="closeM('m-stock')">✕</button>
+    </div>
+    <div class="frow">
+      <div class="fg"><label class="flabel">Nombre</label><input id="sn-nombre" class="finput" placeholder="Nombre del recambio"></div>
+      <div class="fg"><label class="flabel">Referencia</label><input id="sn-ref" class="finput" placeholder="REF-0001"></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label class="flabel">Cantidad</label><input id="sn-qty" class="finput" type="number" min="0" placeholder="0"></div>
+      <div class="fg"><label class="flabel">Mínimo</label><input id="sn-min" class="finput" type="number" min="0" placeholder="5"></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label class="flabel">Unidad</label><input id="sn-unit" class="finput" placeholder="Uds, m, kg..."></div>
+      <div class="fg"><label class="flabel">Ubicación</label><input id="sn-loc" class="finput" placeholder="Almacén A-1..."></div>
+    </div>
+    <div class="fg"><label class="flabel">Proveedor</label><input id="sn-prov" class="finput" placeholder="Proveedor"></div>
+    <div class="factions">
+      <button class="btn btn-outline" onclick="closeM('m-stock')">Cancelar</button>
+      <button class="btn btn-red" onclick="saveStock()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Ajustar Stock -->
+<div class="modal-overlay" id="m-stock-adj">
+  <div class="modal" style="width:380px">
+    <div class="modal-head">
+      <div class="modal-title" id="sadj-name">Ajustar Stock</div>
+      <button class="modal-close" onclick="closeM('m-stock-adj')">✕</button>
+    </div>
+    <div class="fg"><label class="flabel">Nueva Cantidad</label><input id="sadj-qty" class="finput" type="number" min="0"></div>
+    <div class="fg"><label class="flabel">Motivo</label><input id="sadj-motivo" class="finput" placeholder="Recepción pedido, ajuste inventario..."></div>
+    <div class="factions">
+      <button class="btn btn-outline" onclick="closeM('m-stock-adj')">Cancelar</button>
+      <button class="btn btn-red" onclick="applyStockAdj()">Actualizar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Consumir Piezas (al completar OT) -->
+<div class="modal-overlay" id="m-consume">
+  <div class="modal" style="width:480px">
+    <div class="modal-head">
+      <div class="modal-title">Completar Orden de Trabajo</div>
+      <button class="modal-close" onclick="closeM('m-consume')">✕</button>
+    </div>
+
+    <!-- Quién cierra la orden -->
+    <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:18px;display:flex;align-items:center;gap:12px;">
+      <div id="consume-avatar" style="width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:700;font-size:14px;flex-shrink:0;"></div>
+      <div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:1px">Orden cerrada por</div>
+        <div id="consume-username" style="font-size:14px;font-weight:600;color:var(--text)"></div>
+        <div id="consume-datetime" style="font-size:11px;color:var(--text3)"></div>
+      </div>
+      <div style="margin-left:auto"><span class="badge b-green">✓ Sesión activa</span></div>
+    </div>
+
+    <p style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.6">
+      Las siguientes piezas se descontarán automáticamente del stock.
+    </p>
+    <div id="consume-list"></div>
+    <div id="consume-extra" style="margin-top:14px">
+      <div class="fg">
+        <label class="flabel">¿Añadir más piezas no planificadas?</label>
+        <div class="parts-list" id="consume-extra-parts" style="max-height:180px;overflow-y:auto"></div>
+      </div>
+    </div>
+    <div class="fg" style="margin-top:14px">
+      <label class="flabel">Observaciones al cierre <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3)">(opcional)</span></label>
+      <textarea id="consume-obs" class="ftextarea" placeholder="Incidencias, estado del equipo, notas para el siguiente turno..." style="min-height:60px"></textarea>
+    </div>
+    <div class="factions">
+      <button class="btn btn-outline" onclick="closeM('m-consume')">Cancelar</button>
+      <button class="btn btn-red" id="consume-confirm-btn">✅ Cerrar Orden</button>
+    </div>
+  </div>
+</div>
+
+<!-- Nueva Mejora -->
+<div class="modal-overlay" id="m-mejora">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Nueva Idea de Mejora</div>
+      <button class="modal-close" onclick="closeM('m-mejora')">✕</button>
+    </div>
+    <div class="fg"><label class="flabel">Título</label><input id="mej-titulo" class="finput" placeholder="¿Qué quieres mejorar?"></div>
+    <div class="fg"><label class="flabel">Zona / Punto Crítico</label><input id="mej-zona" class="finput" placeholder="Zona de carga, muelle 2..."></div>
+    <div class="fg"><label class="flabel">Descripción</label><textarea id="mej-desc" class="ftextarea" placeholder="Problema actual y mejora propuesta..."></textarea></div>
+    <div class="frow">
+      <div class="fg">
+        <label class="flabel">Impacto</label>
+        <select id="mej-impacto" class="fselect">
+          <option>Seguridad</option><option>Eficiencia</option>
+          <option>Reducción costes</option><option>Calidad</option><option>Otro</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label class="flabel">Prioridad</label>
+        <select id="mej-prio" class="fselect">
+          <option>Baja</option><option>Media</option><option>Alta</option>
+        </select>
+      </div>
+    </div>
+    <div class="factions">
+      <button class="btn btn-outline" onclick="closeM('m-mejora')">Cancelar</button>
+      <button class="btn btn-red" onclick="saveMejora()">Proponer Mejora</button>
+    </div>
+  </div>
+</div>
+
+<!-- Nuevo Usuario -->
+<div class="modal-overlay" id="m-user">
+  <div class="modal" style="width:420px">
+    <div class="modal-head">
+      <div class="modal-title">Nuevo Usuario</div>
+      <button class="modal-close" onclick="closeM('m-user')">✕</button>
+    </div>
+    <div class="frow">
+      <div class="fg"><label class="flabel">Nombre</label><input id="u-nombre" class="finput" placeholder="Nombre completo"></div>
+      <div class="fg"><label class="flabel">Usuario</label><input id="u-user" class="finput" placeholder="nombre.apellido"></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label class="flabel">Contraseña</label><input id="u-pass" class="finput" type="password" placeholder="••••••••"></div>
+      <div class="fg">
+        <label class="flabel">Rol</label>
+        <select id="u-rol" class="fselect">
+          <option value="operario">Operario</option>
+          <option value="jefe">Jefe de Turno</option>
+          <option value="admin">Administrador</option>
+        </select>
+      </div>
+    </div>
+    <div class="factions">
+      <button class="btn btn-outline" onclick="closeM('m-user')">Cancelar</button>
+      <button class="btn btn-red" onclick="saveUser()">Crear Usuario</button>
+    </div>
+  </div>
+</div>
+
+<!-- Historial de movimientos de stock -->
+<div class="modal-overlay" id="m-stock-hist">
+  <div class="modal" style="width:580px">
+    <div class="modal-head">
+      <div class="modal-title" id="hist-title">Historial de movimientos</div>
+      <button class="modal-close" onclick="closeM('m-stock-hist')">✕</button>
+    </div>
+    <div id="hist-body"></div>
+  </div>
+</div>
+
+<!-- Notificación -->
+<div class="notif" id="notif"></div>
+
+<!-- ══════════════════════════════
+     JAVASCRIPT
+══════════════════════════════ -->
+<script>
+// ─── DATA ─────────────────────────────────────────
+let USERS = [
+  {id:1,username:'admin', password:'admin123', name:'Ana García',    role:'admin',   color:'#d92b2b'},
+  {id:2,username:'jefe',  password:'jefe123',  name:'Marco Torres',  role:'jefe',    color:'#2563eb'},
+  {id:3,username:'carlos',password:'op123',    name:'Carlos Ruiz',   role:'operario',color:'#d97706'},
+  {id:4,username:'laura', password:'op123',    name:'Laura Sánchez', role:'operario',color:'#7c3aed'},
+];
+
+let STOCK = [
+  {id:1, nombre:'Rodillo retorno 80mm',      ref:'ROD-080', qty:12, min:5,  unit:'Uds', ubicacion:'Almacén A-1', proveedor:'TecnoRodillos SL', movimientos:[
+    {fecha:'2025-02-10', tipo:'entrada', qty:15, motivo:'Pedido inicial', usuario:'Ana García'},
+    {fecha:'2025-03-01', tipo:'salida',  qty:3,  motivo:'Consumo OT-004', usuario:'Sistema'},
+  ]},
+  {id:2, nombre:'Correa transmisión B42',    ref:'COR-B42', qty:3,  min:6,  unit:'Uds', ubicacion:'Almacén A-2', proveedor:'DriveFlux', movimientos:[
+    {fecha:'2025-01-15', tipo:'entrada', qty:6, motivo:'Pedido inicial', usuario:'Ana García'},
+    {fecha:'2025-03-10', tipo:'salida',  qty:3, motivo:'Consumo OT-002', usuario:'Sistema'},
+  ]},
+  {id:3, nombre:'Aceite hidráulico ISO 46',  ref:'ACE-H46', qty:24, min:10, unit:'L',   ubicacion:'Almacén B-1', proveedor:'LubriTech', movimientos:[
+    {fecha:'2025-02-20', tipo:'entrada', qty:30, motivo:'Reposición stock', usuario:'Marco Torres'},
+    {fecha:'2025-03-05', tipo:'salida',  qty:6,  motivo:'Consumo OT-003', usuario:'Sistema'},
+  ]},
+  {id:4, nombre:'Filtro de aire FA-200',     ref:'FIL-200', qty:2,  min:4,  unit:'Uds', ubicacion:'Almacén B-2', proveedor:'FilterPro',  movimientos:[
+    {fecha:'2025-01-20', tipo:'entrada', qty:6, motivo:'Pedido inicial', usuario:'Ana García'},
+    {fecha:'2025-03-12', tipo:'salida',  qty:4, motivo:'Consumo mantenimiento', usuario:'Sistema'},
+  ]},
+  {id:5, nombre:'Sensor inductivo 12mm',     ref:'SEN-I12', qty:8,  min:3,  unit:'Uds', ubicacion:'Almacén C-1', proveedor:'SensorTek',  movimientos:[
+    {fecha:'2025-02-01', tipo:'entrada', qty:10, motivo:'Pedido inicial', usuario:'Ana García'},
+    {fecha:'2025-03-15', tipo:'salida',  qty:2,  motivo:'Consumo OT-005', usuario:'Sistema'},
+  ]},
+  {id:6, nombre:'Grasa multipropósito EP2',  ref:'GRA-EP2', qty:15, min:5,  unit:'Kg',  ubicacion:'Almacén A-3', proveedor:'LubriTech',  movimientos:[
+    {fecha:'2025-02-15', tipo:'entrada', qty:20, motivo:'Reposición stock', usuario:'Marco Torres'},
+  ]},
+  {id:7, nombre:'Cable flexible 1.5mm²',     ref:'CAB-F15', qty:80, min:20, unit:'m',   ubicacion:'Almacén C-2', proveedor:'CableLux',   movimientos:[
+    {fecha:'2025-01-10', tipo:'entrada', qty:100, motivo:'Pedido inicial', usuario:'Ana García'},
+    {fecha:'2025-02-28', tipo:'salida',  qty:20,  motivo:'Instalación zona B', usuario:'Sistema'},
+  ]},
+  {id:8, nombre:'Relé temporizador 24V',     ref:'REL-T24', qty:4,  min:2,  unit:'Uds', ubicacion:'Almacén C-3', proveedor:'ElectroParts', movimientos:[
+    {fecha:'2025-03-01', tipo:'entrada', qty:4, motivo:'Pedido urgente', usuario:'Ana García'},
+  ]},
+];
+
+let TRABAJOS = [
+  {id:'OT-001', titulo:'Revisión cinta transportadora 3', desc:'Inspección completa de rodillos, tensores y motor principal. Lubricación si necesario.', prioridad:'crítico', estado:'en progreso', abiertoPor:2, asignado:3, realizadoPor:null, fecha:today(), zona:'Zona A — CT3', tipo:'Preventivo', turno:'mañana', partsUsed:[{id:1,qty:2},{id:6,qty:0.5}], cerradoPor:null, obscierre:'', creado:new Date(Date.now()-86400000).toISOString()},
+  {id:'OT-002', titulo:'Cambio de correa en clasificadora',  desc:'Sustitución de correa de transmisión desgastada.', prioridad:'urgente', estado:'pendiente', abiertoPor:3, asignado:4, realizadoPor:null, fecha:today(), zona:'Zona B — Clasificadora', tipo:'Correctivo', turno:'tarde', partsUsed:[{id:2,qty:1}], cerradoPor:null, obscierre:'', creado:new Date(Date.now()-3600000).toISOString()},
+  {id:'OT-003', titulo:'Mantenimiento preventivo elevador', desc:'Revisión mensual del elevador hidráulico. Cambio de aceite y filtros.', prioridad:'normal', estado:'pendiente', abiertoPor:2, asignado:3, realizadoPor:null, fecha:nextDay(), zona:'Zona C — Elevador H1', tipo:'Preventivo', turno:'noche', partsUsed:[{id:3,qty:5},{id:4,qty:1}], cerradoPor:null, obscierre:'', creado:new Date(Date.now()-7200000).toISOString()},
+  {id:'OT-004', titulo:'Inspección sistema de ventilación', desc:'Limpieza de filtros y revisión de motores.', prioridad:'normal', estado:'completado', abiertoPor:2, asignado:4, realizadoPor:4, fecha:prevDay(), zona:'Nave principal', tipo:'Preventivo', turno:'mañana', partsUsed:[], cerradoPor:4, obscierre:'Todo correcto, filtros en buen estado.', creado:new Date(Date.now()-172800000).toISOString()},
+  {id:'OT-005', titulo:'Reparación puerta automática muelle 2', desc:'Sensor de apertura averiado. Sustitución del módulo de control.', prioridad:'urgente', estado:'completado', abiertoPor:1, asignado:3, realizadoPor:3, fecha:prevDay(), zona:'Muelle 2', tipo:'Correctivo', turno:'tarde', partsUsed:[{id:5,qty:1}], cerradoPor:3, obscierre:'Sensor sustituido. Funcionando correctamente.', creado:new Date(Date.now()-259200000).toISOString()},
+];
+
+let MEJORAS = [
+  {id:1, titulo:'Señalización luminosa en cinta 3', zona:'Zona A', desc:'La cinta 3 carece de indicadores de inicio/parada visibles desde los laterales. Riesgo de accidente.', impacto:'Seguridad', prioridad:'Alta', estado:'aprobada', autor:3, votos:[3,4], fecha:'2025-03-15'},
+  {id:2, titulo:'Automatizar vaciado de tolva clasificadora', zona:'Zona B', desc:'El vaciado manual genera cuellos de botella en picos de producción.', impacto:'Eficiencia', prioridad:'Media', estado:'pendiente', autor:4, votos:[4], fecha:'2025-03-20'},
+  {id:3, titulo:'Sistema de etiquetado RFID en almacén', zona:'Almacén', desc:'Sustituir código de barras por RFID para mayor velocidad de inventario.', impacto:'Eficiencia', prioridad:'Alta', estado:'en progreso', autor:2, votos:[1,2,3], fecha:'2025-02-10'},
+];
+
+let ACTIVITY = [
+  {text:'<strong>Carlos Ruiz</strong> actualizó OT-001 a "En Progreso"', time:'hace 23 min', color:'#2563eb'},
+  {text:'<strong>Laura Sánchez</strong> completó OT-005 · Consumió 1× Sensor inductivo', time:'hace 1h', color:'#16a34a'},
+  {text:'<strong>Ana García</strong> ajustó stock: Relé temporizador 24V → 4 Uds', time:'hace 2h', color:'#d92b2b'},
+  {text:'<strong>Marco Torres</strong> aprobó idea de mejora ID-001', time:'hace 3h', color:'#2563eb'},
+  {text:'<strong>Carlos Ruiz</strong> creó OT-002', time:'hace 4h', color:'#d97706'},
+];
+
+let currentUser = null;
+let fOT = 'todos', fStock = 'todos', fMejora = 'todas';
+let editingOT = null, editingStock = null, selectedDay = today();
+let nextOTId = 6, nextStockId = 9, nextMejId = 4;
+let consumingOT = null;
+// qty inputs for consume modal (partsUsed + extras)
+
+// ─── HELPERS ──────────────────────────────────────
+function today(){return new Date().toISOString().split('T')[0];}
+function nextDay(){const d=new Date();d.setDate(d.getDate()+1);return d.toISOString().split('T')[0];}
+function prevDay(){const d=new Date();d.setDate(d.getDate()-1);return d.toISOString().split('T')[0];}
+function fmtDate(d){return new Date(d+'T00:00:00').toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric'});}
+function initials(n){return n.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();}
+function roleLabel(r){return {admin:'Administrador',jefe:'Jefe de Turno',operario:'Operario'}[r]||r;}
+function canCreate(){return currentUser!=null;} // Todos pueden crear OT
+function canPlan(){return currentUser&&(currentUser.role==='admin'||currentUser.role==='jefe');} // Solo jefe/admin planifican
+function totalPartsConsumed(){
+  let t=0;
+  TRABAJOS.filter(x=>x.estado==='completado').forEach(t2=>t2.partsUsed.forEach(p=>t+=p.qty));
+  return Math.round(t*10)/10;
+}
+
+// ─── AUTH ─────────────────────────────────────────
+function doLogin(){
+  const u=document.getElementById('l-user').value.trim();
+  const p=document.getElementById('l-pass').value;
+  const user=USERS.find(x=>x.username===u&&x.password===p);
+  if(!user){document.getElementById('login-err').style.display='block';return;}
+  loginAs(user);
+}
+function quickLogin(u,p){document.getElementById('l-user').value=u;document.getElementById('l-pass').value=p;doLogin();}
+
+function loginAs(user){
+  currentUser=user;
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('sb-name').textContent=user.name;
+  document.getElementById('sb-role').textContent=roleLabel(user.role);
+  const av=document.getElementById('sb-avatar');
+  av.textContent=initials(user.name);
+  av.style.background=user.color+'22';
+  av.style.color=user.color;
+  document.querySelectorAll('.admin-only').forEach(el=>
+    el.style.display=(user.role==='admin'||user.role==='jefe')?'':'none'
+  );
+  updateDate();
+initAI();
+  nav('dashboard',document.querySelector('.nav-item.active'));
+}
+
+function logout(){
+  currentUser=null;
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app').style.display='none';
+  document.getElementById('l-user').value='';
+  document.getElementById('l-pass').value='';
+  document.getElementById('login-err').style.display='none';
+}
+
+// ─── NAV ──────────────────────────────────────────
+function nav(v,el){
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  const titles={dashboard:'Dashboard',trabajos:'Órdenes de Trabajo',planning:'Planificación',stock:'Stock de Recambios',mejoras:'Ideas de Mejora',usuarios:'Gestión de Usuarios'};
+  document.getElementById('topbar-title').textContent=titles[v]||v;
+  const ta=document.getElementById('topbar-actions');
+  ta.innerHTML='';
+  if(v==='trabajos') ta.innerHTML='<button class="btn btn-red btn-sm" onclick="openNewOT()">＋ Nueva Orden</button>';
+  if(v==='stock'&&canPlan()) ta.innerHTML='<button class="btn btn-red btn-sm" onclick="openNewStock()">＋ Añadir Recambio</button>';
+  if(v==='usuarios'&&currentUser.role==='admin') ta.innerHTML='<button class="btn btn-red btn-sm" onclick="openM(\'m-user\')">＋ Nuevo Usuario</button>';
+  updateBadges();
+  if(v==='dashboard') renderDashboard();
+  if(v==='trabajos') renderTrabajos();
+  if(v==='planning') renderPlanning();
+  if(v==='stock'){ renderStock(); refreshAIStatus(); }
+  if(v==='mejoras') renderMejoras();
+  if(v==='usuarios') renderUsers();
+}
+
+function updateBadges(){
+  const act=TRABAJOS.filter(t=>t.estado!=='completado').length;
+  document.getElementById('badge-ot').textContent=act;
+  const bajo=STOCK.filter(s=>s.qty<=s.min).length;
+  document.getElementById('badge-stock').style.display=bajo>0?'':'none';
+}
+
+// ─── DASHBOARD ────────────────────────────────────
+function renderDashboard(){
+  document.getElementById('ds-act').textContent=TRABAJOS.filter(t=>t.estado==='en progreso').length;
+  document.getElementById('ds-pend').textContent=TRABAJOS.filter(t=>t.estado==='pendiente').length;
+  document.getElementById('ds-comp').textContent=TRABAJOS.filter(t=>t.estado==='completado').length;
+  document.getElementById('ds-parts').textContent=totalPartsConsumed();
+
+  document.getElementById('activity-feed').innerHTML=ACTIVITY.map(a=>`
+    <div class="act-item">
+      <div class="act-dot" style="background:${a.color}"></div>
+      <div><div class="act-text">${a.text}</div><div class="act-time">${a.time}</div></div>
+    </div>`).join('');
+
+  const total=TRABAJOS.length||1;
+  const states=[
+    {l:'Completado',c:TRABAJOS.filter(t=>t.estado==='completado').length,col:'#16a34a'},
+    {l:'En Progreso',c:TRABAJOS.filter(t=>t.estado==='en progreso').length,col:'#2563eb'},
+    {l:'Pendiente',c:TRABAJOS.filter(t=>t.estado==='pendiente').length,col:'#d97706'},
+  ];
+  document.getElementById('dist-bars').innerHTML=states.map(s=>`
+    <div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+        <span style="color:var(--text2)">${s.l}</span>
+        <span style="font-weight:600;color:var(--text)">${s.c}</span>
+      </div>
+      <div class="pbar"><div class="pbar-fill" style="width:${s.c/total*100}%;background:${s.col}"></div></div>
+    </div>`).join('');
+
+  const criticals=STOCK.filter(s=>s.qty<=s.min);
+  const cs=document.getElementById('critical-stock');
+  if(criticals.length===0){
+    cs.innerHTML='<p style="font-size:12px;color:var(--text3)">✅ Todo el stock en niveles correctos</p>';
+  } else {
+    cs.innerHTML=criticals.map(s=>`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px">
+        <span>${s.nombre}</span>
+        <span class="badge b-red">${s.qty} ${s.unit}</span>
+      </div>`).join('');
+  }
+  updateBadges();
+}
+
+// ─── TRABAJOS ─────────────────────────────────────
+function renderTrabajos(){
+  const q=(document.getElementById('srch-ot')?.value||'').toLowerCase();
+  let list=TRABAJOS.filter(t=>{
+    if(fOT!=='todos'&&t.estado!==fOT&&t.prioridad!==fOT) return false;
+    if(q&&!t.titulo.toLowerCase().includes(q)&&!t.zona?.toLowerCase().includes(q)) return false;
+    // Operarios ven TODAS las OTs (asignadas o no), pero solo pueden actuar en las suyas
+    return true;
+  });
+  const cont=document.getElementById('ot-list');
+  if(!list.length){cont.innerHTML='<div class="empty"><div class="eico">🔧</div><p>No hay órdenes que mostrar</p></div>';return;}
+  cont.innerHTML=list.map(t=>{
+    const u=USERS.find(x=>x.id===t.asignado);
+    const prBadge={normal:'b-gray',urgente:'b-amber',crítico:'b-red'}[t.prioridad]||'b-gray';
+    const stBadge={pendiente:'b-amber','en progreso':'b-blue',completado:'b-green'}[t.estado]||'b-gray';
+    const cls=t.prioridad==='crítico'?'critical':t.prioridad==='urgente'?'urgent':'';
+    const hasParts=t.partsUsed&&t.partsUsed.some(p=>p.qty>0);
+    const closedUser=t.cerradoPor?USERS.find(x=>x.id===t.cerradoPor):null;
+    const abiertoU=t.abiertoPor?USERS.find(x=>x.id===t.abiertoPor):null;
+    const realizadoU=t.realizadoPor?USERS.find(x=>x.id===t.realizadoPor):null;
+    const turnoHTML=t.turno?`<span class="turno-badge ${t.turno}">${{mañana:'🌅 Mañana',tarde:'🌤️ Tarde',noche:'🌙 Noche'}[t.turno]}</span>`:'';
+    // Un operario solo puede iniciar/completar si está asignado a esa OT
+    const esElAsignado = t.asignado===currentUser.id;
+    const puedeActuar = canPlan() || esElAsignado;
+    // Indicador visual si la OT no tiene asignado todavía
+    const sinAsignarBadge = !t.asignado
+      ? `<span class="badge b-gray" style="border:1.5px dashed var(--border2)">⏳ Sin asignar</span>`
+      : '';
+    return `
+    <div class="wo-card ${cls}" onclick="showOTDetail('${t.id}')">
+      <div class="wo-head">
+        <span class="wo-id">${t.id}</span>
+        <span class="wo-title">${t.titulo}</span>
+        <span class="badge ${prBadge}">${t.prioridad}</span>
+      </div>
+      <div class="wo-desc">${t.desc}</div>
+      <div class="wo-foot">
+        <span class="badge ${stBadge}">${t.estado}</span>
+        ${sinAsignarBadge}
+        ${turnoHTML}
+        <span class="wo-meta">📍 ${t.zona||'—'}</span>
+        ${t.fecha?`<span class="wo-meta">📅 ${fmtDate(t.fecha)}</span>`:''}
+        ${hasParts?`<span class="parts-tag">📦 ${t.partsUsed.reduce((a,p)=>a+p.qty,0)} piezas</span>`:''}
+        ${abiertoU?`<span class="wo-meta" title="Abre la OT">✍️ <div class="avatar" style="background:${abiertoU.color}22;color:${abiertoU.color}">${initials(abiertoU.name)}</div></span>`:''}
+        ${u?`<span class="wo-meta" title="Asignado a">👷 <div class="avatar" style="background:${u.color}22;color:${u.color}">${initials(u.name)}</div> ${u.name}</span>`:''}
+        ${realizadoU?`<span class="closed-by">🔧 ${realizadoU.name}</span>`:''}
+        ${closedUser&&!realizadoU?`<span class="closed-by">✓ ${closedUser.name}</span>`:''}
+        <span onclick="event.stopPropagation()">
+          ${canPlan()?`<button class="btn btn-ghost btn-xs" onclick="editOT('${t.id}')">Editar</button>`:''}
+          ${t.estado==='en progreso'&&puedeActuar?`<button class="btn btn-red btn-xs" onclick="event.stopPropagation();openConsumeModal('${t.id}')">✅ Completar</button>`:''}
+          ${t.estado==='pendiente'&&puedeActuar?`<button class="btn btn-outline btn-xs" onclick="event.stopPropagation();startOT('${t.id}')">▶ Iniciar</button>`:''}
+        </span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setF(el,v){
+  document.querySelectorAll('#view-trabajos .fchip').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');fOT=v;renderTrabajos();
+}
+
+function startOT(id){
+  const t=TRABAJOS.find(x=>x.id===id);
+  if(!t) return;
+  t.estado='en progreso';
+  ACTIVITY.unshift({text:`<strong>${currentUser.name}</strong> inició ${t.id}`,time:'ahora',color:currentUser.color});
+  notify('▶ Orden iniciada: '+t.id);
+  renderTrabajos();updateBadges();
+}
+
+// ── MODAL COMPLETAR CON CONSUME ────────────────────
+function openConsumeModal(id){
+  consumingOT=id;
+  const t=TRABAJOS.find(x=>x.id===id);
+
+  // Mostrar quién cierra la orden (usuario en sesión)
+  const av=document.getElementById('consume-avatar');
+  av.textContent=initials(currentUser.name);
+  av.style.background=currentUser.color+'22';
+  av.style.color=currentUser.color;
+  document.getElementById('consume-username').textContent=currentUser.name+' — '+roleLabel(currentUser.role);
+  const now=new Date();
+  document.getElementById('consume-datetime').textContent=
+    now.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'})+' · '+
+    now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('consume-obs').value='';
+
+  // Piezas planificadas
+  const cl=document.getElementById('consume-list');
+  if(!t.partsUsed||!t.partsUsed.length){
+    cl.innerHTML='<p style="font-size:13px;color:var(--text2);margin-bottom:8px">No hay piezas planificadas para esta orden.</p>';
+  } else {
+    cl.innerHTML=`
+      <div class="parts-list" style="margin-bottom:10px">
+        ${t.partsUsed.map(p=>{
+          const s=STOCK.find(x=>x.id===p.id);
+          if(!s) return '';
+          return `<div class="part-row">
+            <div class="part-name">${s.nombre} <span class="tag">${s.ref}</span></div>
+            <div class="part-stock">Stock: <strong>${s.qty} ${s.unit}</strong></div>
+            <input type="number" class="part-qty-input" id="cp-${s.id}" value="${p.qty}" min="0" max="${s.qty}">
+            <span style="font-size:12px;color:var(--text2)">${s.unit}</span>
+          </div>`;
+        }).join('')}
+      </div>`;
+  }
+  // Piezas extra
+  const ep=document.getElementById('consume-extra-parts');
+  ep.innerHTML=STOCK.map(s=>`
+    <div class="part-row">
+      <input type="checkbox" class="part-check" id="cex-chk-${s.id}">
+      <div class="part-name">${s.nombre}</div>
+      <div class="part-stock">${s.qty} ${s.unit}</div>
+      <input type="number" class="part-qty-input" id="cex-qty-${s.id}" value="1" min="1" max="${s.qty}" style="width:52px">
+      <span style="font-size:11px;color:var(--text2)">${s.unit}</span>
+    </div>`).join('');
+  document.getElementById('consume-confirm-btn').onclick=()=>confirmComplete(id);
+  openM('m-consume');
+}
+
+function confirmComplete(id){
+  const t=TRABAJOS.find(x=>x.id===id);
+  let partsLog=[];
+
+  // Descontar planificadas
+  (t.partsUsed||[]).forEach(p=>{
+    const input=document.getElementById('cp-'+p.id);
+    if(!input) return;
+    const qty=parseFloat(input.value)||0;
+    if(qty<=0) return;
+    const s=STOCK.find(x=>x.id===p.id);
+    if(!s) return;
+    if(qty>s.qty){notify('⚠️ Stock insuficiente: '+s.nombre);return;}
+    s.qty=Math.round((s.qty-qty)*100)/100;
+    p.qty=qty;
+    if(!s.movimientos) s.movimientos=[];
+    s.movimientos.unshift({fecha:today(),tipo:'salida',qty,motivo:'Consumo '+t.id,usuario:currentUser.name});
+    partsLog.push(`${qty}× ${s.nombre}`);
+    flashStockCard(s.id);
+  });
+
+  // Descontar extras
+  STOCK.forEach(s=>{
+    const chk=document.getElementById('cex-chk-'+s.id);
+    const qInput=document.getElementById('cex-qty-'+s.id);
+    if(!chk||!chk.checked) return;
+    const qty=parseFloat(qInput.value)||0;
+    if(qty<=0) return;
+    if(qty>s.qty){notify('⚠️ Stock insuficiente: '+s.nombre);return;}
+    s.qty=Math.round((s.qty-qty)*100)/100;
+    if(!s.movimientos) s.movimientos=[];
+    s.movimientos.unshift({fecha:today(),tipo:'salida',qty,motivo:'Consumo extra '+t.id,usuario:currentUser.name});
+    const existing=t.partsUsed.find(p=>p.id===s.id);
+    if(existing) existing.qty+=qty;
+    else t.partsUsed.push({id:s.id,qty});
+    partsLog.push(`${qty}× ${s.nombre}`);
+    flashStockCard(s.id);
+  });
+
+  t.estado='completado';
+  t.cerradoPor=currentUser.id;
+  t.realizadoPor=currentUser.id;
+  t.obscierre=document.getElementById('consume-obs').value.trim();
+  t.fechaCierre=new Date().toISOString();
+  const log=partsLog.length?` · Piezas: ${partsLog.join(', ')}`:'';
+  ACTIVITY.unshift({text:`<strong>${currentUser.name}</strong> cerró ${t.id}${log}`,time:'ahora',color:'#16a34a'});
+  notify('✅ Orden completada. Stock actualizado automáticamente.');
+  closeM('m-consume');
+  renderTrabajos();updateBadges();
+  if(document.getElementById('view-stock').classList.contains('active')) renderStock();
+}
+
+function flashStockCard(stockId){
+  // Will flash when stock view re-renders
+  setTimeout(()=>{
+    const cards=document.querySelectorAll('.stock-card');
+    cards.forEach(c=>{if(c.dataset.id==stockId){c.classList.add('stock-updated');setTimeout(()=>c.classList.remove('stock-updated'),1600);}});
+  },100);
+}
+
+function showOTDetail(id){
+  const t=TRABAJOS.find(x=>x.id==id);if(!t) return;
+  const u=USERS.find(x=>x.id===t.asignado);
+  const closedUser=t.cerradoPor?USERS.find(x=>x.id===t.cerradoPor):null;
+  const prBadge={normal:'b-gray',urgente:'b-amber',crítico:'b-red'}[t.prioridad];
+  const stBadge={pendiente:'b-amber','en progreso':'b-blue',completado:'b-green'}[t.estado];
+  const turnoLabel={mañana:'🌅 Mañana',tarde:'🌤️ Tarde',noche:'🌙 Noche'};
+
+  const partsHTML=t.partsUsed&&t.partsUsed.filter(p=>p.qty>0).length?`
+    <div style="margin-top:16px">
+      <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);margin-bottom:8px">Piezas utilizadas</div>
+      ${t.partsUsed.filter(p=>p.qty>0).map(p=>{
+        const s=STOCK.find(x=>x.id===p.id);
+        return s?`<div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)">
+          <span>${s.nombre} <span class="tag">${s.ref}</span></span>
+          <span class="badge b-red">${p.qty} ${s.unit}</span>
+        </div>`:'';}
+      ).join('')}
+    </div>`:'';
+
+  const closedByHTML=closedUser?`
+    <div style="margin-top:16px;background:var(--green-light);border:1.5px solid #bbf7d0;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;">
+      <div class="avatar" style="background:${closedUser.color}22;color:${closedUser.color};width:34px;height:34px">${initials(closedUser.name)}</div>
+      <div>
+        <div style="font-size:11px;color:var(--green);font-weight:600;text-transform:uppercase;letter-spacing:.6px">Orden cerrada por</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text)">${closedUser.name}</div>
+        ${t.fechaCierre?`<div style="font-size:11px;color:var(--text3)">${new Date(t.fechaCierre).toLocaleString('es-ES',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}</div>`:''}
+      </div>
+    </div>
+    ${t.obscierre?`<div style="margin-top:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;">
+      <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:4px">Observaciones al cierre</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.5">${t.obscierre}</div>
+    </div>`:''}`:
+    '';
+
+  document.getElementById('detail-title').textContent=t.id+' — '+t.titulo;
+  const abierto=t.abiertoPor?USERS.find(x=>x.id===t.abiertoPor):null;
+  const asignadoU=u;
+  const realizadoU=t.realizadoPor?USERS.find(x=>x.id===t.realizadoPor):null;
+
+  function userChip(usr){
+    if(!usr) return '<span style="color:var(--text3);font-size:13px">—</span>';
+    return `<div style="display:inline-flex;align-items:center;gap:7px;">
+      <div class="avatar" style="background:${usr.color}22;color:${usr.color};width:28px;height:28px">${initials(usr.name)}</div>
+      <div><div style="font-size:13px;font-weight:600">${usr.name}</div><div style="font-size:10px;color:var(--text3)">${roleLabel(usr.role)}</div></div>
+    </div>`;
+  }
+
+  document.getElementById('detail-body').innerHTML=`
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+      <span class="badge ${prBadge}">${t.prioridad}</span>
+      <span class="badge ${stBadge}">${t.estado}</span>
+      <span class="tag">${t.tipo}</span>
+      ${t.turno?`<span class="turno-badge ${t.turno}">${turnoLabel[t.turno]||t.turno}</span>`:''}
+    </div>
+    <p style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:18px">${t.desc}</p>
+
+    <!-- Grid info básica -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Zona / Equipo</div><div style="font-size:14px;font-weight:500">${t.zona}</div></div>
+      <div><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Fecha</div><div style="font-size:14px;font-weight:500">${fmtDate(t.fecha)}</div></div>
+    </div>
+
+    <!-- Personas implicadas -->
+    <div style="border:1.5px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px">
+      <div style="background:var(--surface2);padding:8px 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3)">Personas implicadas</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0">
+        <div style="padding:12px 14px;border-right:1px solid var(--border)">
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px">✍️ Abre la OT</div>
+          ${userChip(abierto)}
+        </div>
+        <div style="padding:12px 14px;border-right:1px solid var(--border)">
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px">👷 Asignado a</div>
+          ${userChip(asignadoU)}
+        </div>
+        <div style="padding:12px 14px;">
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px">🔧 Realizado por</div>
+          ${realizadoU ? userChip(realizadoU) : '<span style="font-size:12px;color:var(--text3)">Pendiente</span>'}
+        </div>
+      </div>
+    </div>
+
+    ${partsHTML}
+    ${closedByHTML}`;
+  openM('m-detail');
+}
+
+function openNewOT(){
+  editingOT=null;
+  document.getElementById('m-ot-title').textContent='Nueva Orden de Trabajo';
+  ['ot-titulo','ot-desc','ot-zona'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ot-prio').value='normal';
+  document.getElementById('ot-tipo').value='Preventivo';
+  if(canPlan()){
+    document.getElementById('ot-fecha').value=today();
+    populateUsers('ot-asign', null);
+    document.getElementById('plan-fields').style.display='';
+    setTurno('mañana');
+    buildPartsSelector([]);
+  } else {
+    // Operario: el bloque de planificación no existe para él
+    document.getElementById('plan-fields').style.display='none';
+  }
+  openM('m-ot');
+}
+
+function editOT(id){
+  const t=TRABAJOS.find(x=>x.id===id);if(!t) return;
+  editingOT=id;
+  document.getElementById('m-ot-title').textContent='Editar '+t.id;
+  document.getElementById('ot-titulo').value=t.titulo;
+  document.getElementById('ot-desc').value=t.desc;
+  document.getElementById('ot-zona').value=t.zona;
+  document.getElementById('ot-prio').value=t.prioridad;
+  document.getElementById('ot-tipo').value=t.tipo;
+  if(canPlan()){
+    document.getElementById('ot-fecha').value=t.fecha;
+    populateUsers('ot-asign', t.asignado);
+    document.getElementById('plan-fields').style.display='';
+    setTurno(t.turno||'mañana');
+    buildPartsSelector(t.partsUsed||[]);
+  } else {
+    document.getElementById('plan-fields').style.display='none';
+  }
+  openM('m-ot');
+}
+
+function buildPartsSelector(partsUsed){
+  document.getElementById('parts-selector').innerHTML=STOCK.map(s=>{
+    const pu=partsUsed.find(p=>p.id===s.id);
+    const qty=pu?pu.qty:0;
+    const isLow=s.qty<=s.min;
+    return `<div class="part-row">
+      <input type="checkbox" class="part-check" id="ps-chk-${s.id}" ${qty>0?'checked':''}>
+      <div class="part-name">${s.nombre} ${isLow?'<span class="badge b-red" style="font-size:9px">Bajo</span>':''}</div>
+      <div class="part-stock">${s.qty} ${s.unit}</div>
+      <input type="number" class="part-qty-input" id="ps-qty-${s.id}" value="${qty||1}" min="0.1" step="0.1" max="${s.qty}">
+      <span style="font-size:11px;color:var(--text2)">${s.unit}</span>
+    </div>`;
+  }).join('');
+}
+
+function getSelectedParts(){
+  return STOCK.map(s=>{
+    const chk=document.getElementById('ps-chk-'+s.id);
+    const qty=parseFloat(document.getElementById('ps-qty-'+s.id)?.value)||0;
+    return chk&&chk.checked&&qty>0?{id:s.id,qty}:null;
+  }).filter(Boolean);
+}
+
+function saveOT(){
+  const titulo=document.getElementById('ot-titulo').value.trim();
+  if(!titulo){notify('⚠️ El título es obligatorio');return;}
+  const partsUsed=getSelectedParts();
+  if(editingOT){
+    const t=TRABAJOS.find(x=>x.id===editingOT);
+    t.titulo=titulo;t.desc=document.getElementById('ot-desc').value;
+    t.prioridad=document.getElementById('ot-prio').value;
+    t.zona=document.getElementById('ot-zona').value;
+    t.tipo=document.getElementById('ot-tipo').value;
+    if(canPlan()){
+      t.asignado=parseInt(document.getElementById('ot-asign').value)||null;
+      t.fecha=document.getElementById('ot-fecha').value;
+      t.turno=getTurno();
+      t.partsUsed=partsUsed;
+    }
+    notify('✅ Orden actualizada');
+  } else {
+    const newT={
+      id:'OT-00'+nextOTId++, titulo,
+      desc:document.getElementById('ot-desc').value,
+      prioridad:document.getElementById('ot-prio').value,
+      estado:'pendiente',
+      asignado: canPlan() ? (parseInt(document.getElementById('ot-asign').value)||null) : null,
+      fecha: canPlan() ? document.getElementById('ot-fecha').value : null,
+      zona:document.getElementById('ot-zona').value,
+      tipo:document.getElementById('ot-tipo').value,
+      turno: canPlan()?getTurno():null,
+      abiertoPor: currentUser.id,
+      realizadoPor: null,
+      cerradoPor:null, obscierre:'',
+      partsUsed: canPlan()?partsUsed:[],
+      creado:new Date().toISOString()
+    };
+    TRABAJOS.unshift(newT);
+    ACTIVITY.unshift({text:`<strong>${currentUser.name}</strong> creó ${newT.id}`,time:'ahora',color:currentUser.color});
+    notify('✅ Orden creada: '+newT.id);
+  }
+  closeM('m-ot');renderTrabajos();updateBadges();
+}
+
+function populateUsers(selId,selected){
+  document.getElementById(selId).innerHTML=USERS.map(u=>
+    `<option value="${u.id}" ${u.id==selected?'selected':''}>${u.name} (${roleLabel(u.role)})</option>`
+  ).join('');
+}
+
+// ─── PLANNING ─────────────────────────────────────
+function renderPlanning(){
+  const strip=document.getElementById('cal-strip');
+  const days=[];const d=new Date();d.setDate(d.getDate()-3);
+  for(let i=0;i<14;i++){days.push(new Date(d));d.setDate(d.getDate()+1);}
+  strip.innerHTML=days.map(day=>{
+    const ds=day.toISOString().split('T')[0];
+    const isToday=ds===today();
+    const hw=TRABAJOS.some(t=>t.fecha===ds);
+    const sel=ds===selectedDay;
+    return `<div class="cal-day ${isToday?'today':''} ${hw&&!isToday?'haswork':''} ${sel?'sel':''}" onclick="selDay('${ds}')">
+      <div class="cd-name">${day.toLocaleDateString('es-ES',{weekday:'short'}).slice(0,3)}</div>
+      <div class="cd-num">${day.getDate()}</div>
+      ${hw?'<div class="cd-dot"></div>':'<div style="height:7px"></div>'}
+    </div>`;
+  }).join('');
+  renderPlanDay();
+}
+
+function selDay(ds){
+  selectedDay=ds;
+  document.querySelectorAll('.cal-day').forEach(el=>{
+    el.classList.toggle('sel',el.onclick?.toString().includes(ds));
+  });
+  renderPlanning();
+}
+
+function renderPlanDay(){
+  const ts=TRABAJOS.filter(t=>t.fecha===selectedDay);
+  document.getElementById('plan-day-title').textContent=`Trabajos del ${fmtDate(selectedDay)} (${ts.length})`;
+  const cont=document.getElementById('plan-list');
+  if(!ts.length){cont.innerHTML='<div class="empty"><div class="eico">📅</div><p>Sin órdenes este día</p></div>';return;}
+  cont.innerHTML=ts.map(t=>{
+    const u=USERS.find(x=>x.id===t.asignado);
+    const stBadge={pendiente:'b-amber','en progreso':'b-blue',completado:'b-green'}[t.estado]||'b-gray';
+    const prBadge={normal:'b-gray',urgente:'b-amber',crítico:'b-red'}[t.prioridad]||'b-gray';
+    const hasParts=t.partsUsed&&t.partsUsed.some(p=>p.qty>0);
+    return `<div class="wo-card" style="cursor:pointer" onclick="goToOT('${t.id}')" title="Ver orden completa →">
+      <div class="wo-head">
+        <span class="wo-id">${t.id}</span>
+        <span class="wo-title">${t.titulo}</span>
+        <span class="badge ${stBadge}">${t.estado}</span>
+        <span class="badge ${prBadge}">${t.prioridad}</span>
+      </div>
+      <div class="wo-foot">
+        <span class="wo-meta">📍 ${t.zona}</span>
+        <span class="wo-meta">🔩 ${t.tipo}</span>
+        ${hasParts?`<span class="parts-tag">📦 ${t.partsUsed.reduce((a,p)=>a+p.qty,0)} piezas</span>`:''}
+        ${u?`<span class="wo-meta" style="margin-left:auto"><div class="avatar" style="background:${u.color}22;color:${u.color}">${initials(u.name)}</div> ${u.name}</span>`:''}
+        <span style="font-size:11px;color:var(--red);font-weight:600;margin-left:6px">Ver orden →</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function goToOT(id){
+  // Navega a Órdenes de Trabajo y abre el detalle de la orden
+  const navEl=document.querySelector('.nav-item[onclick*="trabajos"]');
+  nav('trabajos', navEl);
+  // Pequeño delay para que renderice primero
+  setTimeout(()=>showOTDetail(id), 80);
+}
+
+// ─── STOCK ────────────────────────────────────────
+function renderStock(){
+  const q=(document.getElementById('srch-stock')?.value||'').toLowerCase();
+  let list=STOCK.filter(s=>{
+    if(fStock==='bajo'&&s.qty>s.min) return false;
+    if(fStock==='ok'&&s.qty<=s.min) return false;
+    if(q&&!s.nombre.toLowerCase().includes(q)&&!s.ref.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  const cont=document.getElementById('stock-grid');
+  if(!list.length){cont.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="eico">📦</div><p>Sin resultados</p></div>';return;}
+  cont.innerHTML=list.map(s=>{
+    const pct=Math.min(s.qty/Math.max(s.qty*1.5,1)*100,100);
+    const isLow=s.qty<=s.min;
+    const isWarn=!isLow&&s.qty<=s.min*1.5;
+    const barCol=isLow?'#d92b2b':isWarn?'#d97706':'#16a34a';
+    return `
+    <div class="stock-card ${isLow?'s-critical':isWarn?'s-warn':''}" data-id="${s.id}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div class="s-ref">${s.ref}</div>
+        <button class="btn btn-ghost btn-xs" style="padding:3px 8px;font-size:10px" onclick="showStockHist(${s.id})" title="Ver historial">📋 Historial</button>
+      </div>
+      <div class="s-name">${s.nombre}</div>
+      <div><span class="s-qty" style="color:${barCol}">${s.qty}</span><span class="s-unit">${s.unit}</span></div>
+      <div class="s-bar-wrap"><div class="s-bar" style="width:${pct}%;background:${barCol}"></div></div>
+      <div class="s-foot">
+        <span class="s-loc">📍 ${s.ubicacion}</span>
+        ${isLow?'<span class="badge b-red">Bajo mínimo</span>':isWarn?'<span class="badge b-amber">Atención</span>':'<span class="badge b-green">OK</span>'}
+      </div>
+      ${canPlan()?`<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+        <button class="btn btn-outline btn-xs" style="width:100%" onclick="openStockAdj(${s.id})">✏️ Ajustar cantidad</button>
+      </div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function setSF(el,v){
+  document.querySelectorAll('#view-stock .fchip').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');fStock=v;renderStock();
+}
+
+function openNewStock(){
+  editingStock=null;
+  document.getElementById('m-stock-title').textContent='Nuevo Recambio';
+  ['sn-nombre','sn-ref','sn-unit','sn-loc','sn-prov'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('sn-qty').value='';
+  document.getElementById('sn-min').value='';
+  openM('m-stock');
+}
+
+function openStockAdj(id){
+  if(currentUser.role==='operario') return;
+  editingStock=id;
+  const s=STOCK.find(x=>x.id===id);
+  document.getElementById('sadj-name').textContent='Ajustar: '+s.nombre;
+  document.getElementById('sadj-qty').value=s.qty;
+  document.getElementById('sadj-motivo').value='';
+  openM('m-stock-adj');
+}
+
+function saveStock(){
+  const nombre=document.getElementById('sn-nombre').value.trim();
+  if(!nombre){notify('⚠️ Nombre obligatorio');return;}
+  const qty=parseFloat(document.getElementById('sn-qty').value)||0;
+  const newStock={
+    id:nextStockId++, nombre, ref:document.getElementById('sn-ref').value,
+    qty, min:parseFloat(document.getElementById('sn-min').value)||5,
+    unit:document.getElementById('sn-unit').value||'Uds',
+    ubicacion:document.getElementById('sn-loc').value,
+    proveedor:document.getElementById('sn-prov').value,
+    movimientos: qty>0?[{
+      fecha:today(), tipo:'entrada', qty,
+      motivo:'Stock inicial al dar de alta el artículo',
+      usuario:currentUser.name
+    }]:[]
+  };
+  STOCK.push(newStock);
+  ACTIVITY.unshift({text:`<strong>${currentUser.name}</strong> añadió recambio: ${nombre} (${qty} ${newStock.unit})`,time:'ahora',color:currentUser.color});
+  notify('✅ Recambio añadido');closeM('m-stock');renderStock();updateBadges();
+}
+
+function applyStockAdj(){
+  const s=STOCK.find(x=>x.id===editingStock);
+  const old=s.qty;
+  const nueva=parseFloat(document.getElementById('sadj-qty').value)||0;
+  const motivo=document.getElementById('sadj-motivo').value.trim()||'Ajuste manual';
+  const diff=nueva-old;
+  const tipo = diff>0?'entrada': diff<0?'salida':'ajuste';
+  s.qty=nueva;
+  if(!s.movimientos) s.movimientos=[];
+  s.movimientos.unshift({
+    fecha:today(), tipo, qty:Math.abs(diff),
+    motivo, usuario:currentUser.name
+  });
+  ACTIVITY.unshift({text:`<strong>${currentUser.name}</strong> ajustó "${s.nombre}" ${old}→${nueva} ${s.unit} (${motivo})`,time:'ahora',color:currentUser.color});
+  notify('✅ Stock actualizado');closeM('m-stock-adj');renderStock();updateBadges();
+}
+
+// ─── MEJORAS ──────────────────────────────────────
+function renderMejoras(){
+  let list=MEJORAS.filter(m=>fMejora==='todas'||m.estado===fMejora);
+  const cont=document.getElementById('mejoras-list');
+  if(!list.length){cont.innerHTML='<div class="empty"><div class="eico">💡</div><p>Sin ideas</p></div>';return;}
+  cont.innerHTML=list.map(m=>{
+    const u=USERS.find(x=>x.id===m.autor);
+    const sm={pendiente:'b-amber',aprobada:'b-green','en progreso':'b-blue',rechazada:'b-gray'};
+    const cm={pendiente:'ic-pending',aprobada:'ic-approved','en progreso':'ic-progress',rechazada:'ic-rejected'};
+    const voted=m.votos.includes(currentUser.id);
+    return `
+    <div class="idea-card ${cm[m.estado]||'ic-pending'}">
+      <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:6px">
+        <div style="flex:1">
+          <div class="idea-title">${m.titulo}</div>
+          <div class="idea-meta">📍 ${m.zona} &nbsp;·&nbsp; 🎯 ${m.impacto} &nbsp;·&nbsp; ⚡ ${m.prioridad}</div>
+        </div>
+        <span class="badge ${sm[m.estado]||'b-gray'}">${m.estado}</span>
+      </div>
+      <div class="idea-desc">${m.desc}</div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        ${u?`<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)">
+          <div class="avatar" style="background:${u.color}22;color:${u.color};width:22px;height:22px;font-size:9px">${initials(u.name)}</div>${u.name}
+        </div>`:''}
+        <span style="font-size:11px;color:var(--text3)">${fmtDate(m.fecha)}</span>
+        <button class="upvote-btn ${voted?'voted':''}" onclick="toggleVote(${m.id})">▲ ${m.votos.length} ${voted?'Apoyado':'Apoyar'}</button>
+        ${(canCreate())&&m.estado==='pendiente'?`
+          <button class="btn btn-ghost btn-xs" style="color:#16a34a;border-color:#bbf7d0" onclick="approveM(${m.id})">✓ Aprobar</button>
+          <button class="btn btn-danger-soft btn-xs" onclick="rejectM(${m.id})">✕ Rechazar</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setMF(el,v){
+  document.querySelectorAll('#view-mejoras .fchip').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');fMejora=v;renderMejoras();
+}
+
+function saveMejora(){
+  const titulo=document.getElementById('mej-titulo').value.trim();
+  if(!titulo){notify('⚠️ Título obligatorio');return;}
+  MEJORAS.unshift({
+    id:nextMejId++, titulo, zona:document.getElementById('mej-zona').value,
+    desc:document.getElementById('mej-desc').value,
+    impacto:document.getElementById('mej-impacto').value,
+    prioridad:document.getElementById('mej-prio').value,
+    estado:'pendiente', autor:currentUser.id, votos:[currentUser.id], fecha:today()
+  });
+  ACTIVITY.unshift({text:`<strong>${currentUser.name}</strong> propuso mejora: "${titulo}"`,time:'ahora',color:currentUser.color});
+  notify('💡 Mejora propuesta');closeM('m-mejora');renderMejoras();updateBadges();
+}
+
+function toggleVote(id){
+  const m=MEJORAS.find(x=>x.id===id);
+  const i=m.votos.indexOf(currentUser.id);
+  if(i>=0) m.votos.splice(i,1); else m.votos.push(currentUser.id);
+  renderMejoras();
+}
+function approveM(id){const m=MEJORAS.find(x=>x.id===id);m.estado='aprobada';ACTIVITY.unshift({text:`<strong>${currentUser.name}</strong> aprobó mejora: "${m.titulo}"`,time:'ahora',color:currentUser.color});notify('✅ Mejora aprobada');renderMejoras();updateBadges();}
+function rejectM(id){MEJORAS.find(x=>x.id===id).estado='rechazada';notify('Mejora rechazada');renderMejoras();}
+
+// ─── USUARIOS ─────────────────────────────────────
+function renderUsers(){
+  const rc={admin:'b-red',jefe:'b-blue',operario:'b-amber'};
+  document.getElementById('users-list').innerHTML=USERS.map(u=>`
+    <div class="urow">
+      <div class="uavatar" style="width:36px;height:36px;border-radius:9px;background:${u.color}22;color:${u.color};font-family:var(--font-head);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center">${initials(u.name)}</div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:600">${u.name}</div>
+        <div style="font-size:11px;color:var(--text3)">@${u.username}</div>
+      </div>
+      <span class="badge ${rc[u.role]||'b-gray'}">${roleLabel(u.role)}</span>
+      ${currentUser.role==='admin'&&u.id!==currentUser.id?`<button class="btn btn-danger-soft btn-sm" onclick="deleteUser(${u.id})">Eliminar</button>`:''}
+    </div>`).join('');
+}
+
+function saveUser(){
+  const nombre=document.getElementById('u-nombre').value.trim();
+  const username=document.getElementById('u-user').value.trim();
+  const password=document.getElementById('u-pass').value;
+  const role=document.getElementById('u-rol').value;
+  if(!nombre||!username||!password){notify('⚠️ Completa todos los campos');return;}
+  if(USERS.find(u=>u.username===username)){notify('⚠️ Usuario ya existe');return;}
+  const colors=['#d92b2b','#2563eb','#16a34a','#d97706','#7c3aed','#0891b2'];
+  USERS.push({id:Date.now(),username,password,name:nombre,role,color:colors[Math.floor(Math.random()*colors.length)]});
+  notify('✅ Usuario creado');closeM('m-user');renderUsers();
+}
+
+function deleteUser(id){
+  if(!confirm('¿Eliminar usuario?')) return;
+  USERS=USERS.filter(u=>u.id!==id);
+  notify('🗑️ Usuario eliminado');renderUsers();
+}
+
+// ─── UTILS ────────────────────────────────────────
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape') document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));
+});
+
+function notify(msg){
+  const n=document.getElementById('notif');
+  n.textContent=msg;n.classList.add('show');
+  setTimeout(()=>n.classList.remove('show'),2800);
+}
+
+function updateDate(){
+  const el=document.getElementById('topbar-date');
+  if(el) el.textContent=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+updateDate();
+
+// ─── TURNO SELECTOR ───────────────────────────────
+function setTurno(val){
+  document.querySelectorAll('.turno-opt').forEach(el=>{
+    el.classList.toggle('selected', el.dataset.turno===val);
+    el.querySelector('input').checked = el.dataset.turno===val;
+  });
+}
+function getTurno(){
+  const checked=document.querySelector('input[name="ot-turno"]:checked');
+  return checked?checked.value:null;
+}
+// Click handler for turno opts (delegated)
+document.addEventListener('click',function(e){
+  const opt=e.target.closest('.turno-opt');
+  if(!opt) return;
+  setTurno(opt.dataset.turno);
+});
+// ─── HISTORIAL STOCK ──────────────────────────────
+function showStockHist(id){
+  const s=STOCK.find(x=>x.id===id);
+  document.getElementById('hist-title').textContent='Historial — '+s.nombre;
+  const movs=(s.movimientos||[]).slice().reverse().reverse(); // mantener orden original (más reciente arriba)
+  const tipoStyle={
+    entrada:{badge:'b-green',label:'Entrada',icon:'📥'},
+    salida: {badge:'b-red',  label:'Salida', icon:'📤'},
+    ajuste: {badge:'b-gray', label:'Ajuste', icon:'🔄'},
+  };
+  const totalEntradas=movs.filter(m=>m.tipo==='entrada').reduce((a,m)=>a+m.qty,0);
+  const totalSalidas=movs.filter(m=>m.tipo==='salida').reduce((a,m)=>a+m.qty,0);
+  document.getElementById('hist-body').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px">
+      <div style="background:var(--green-light);border:1px solid #bbf7d0;border-radius:9px;padding:12px;text-align:center">
+        <div style="font-size:10px;color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Total Entradas</div>
+        <div style="font-family:var(--font-head);font-size:22px;font-weight:800;color:var(--green)">${totalEntradas} ${s.unit}</div>
+      </div>
+      <div style="background:var(--red-light);border:1px solid var(--red-mid);border-radius:9px;padding:12px;text-align:center">
+        <div style="font-size:10px;color:var(--red);font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Total Salidas</div>
+        <div style="font-family:var(--font-head);font-size:22px;font-weight:800;color:var(--red)">${totalSalidas} ${s.unit}</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:12px;text-align:center">
+        <div style="font-size:10px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Stock Actual</div>
+        <div style="font-family:var(--font-head);font-size:22px;font-weight:800;color:var(--text)">${s.qty} ${s.unit}</div>
+      </div>
+    </div>
+    ${movs.length===0
+      ? '<div class="empty"><div class="eico">📋</div><p>Sin movimientos registrados</p></div>'
+      : `<div class="table-wrap">
+          <table>
+            <thead><tr><th>Fecha</th><th>Tipo</th><th>Cantidad</th><th>Motivo</th><th>Registrado por</th></tr></thead>
+            <tbody>
+              ${movs.slice().reverse().map(m=>{
+                const ts=tipoStyle[m.tipo]||tipoStyle.ajuste;
+                const ini=m.usuario.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+                return `<tr>
+                  <td style="font-weight:500;white-space:nowrap">${fmtDate(m.fecha)}</td>
+                  <td><span class="badge ${ts.badge}">${ts.icon} ${ts.label}</span></td>
+                  <td style="font-weight:700;font-family:var(--font-head)">${m.qty} ${s.unit}</td>
+                  <td style="color:var(--text2);font-size:12px">${m.motivo}</td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:6px;font-size:12px">
+                      ${m.usuario!=='Sistema'
+                        ?`<div class="avatar" style="width:22px;height:22px;font-size:9px;background:var(--red-light);color:var(--red)">${ini}</div>`
+                        :'<span style="font-size:13px">⚙️</span>'}
+                      ${m.usuario}
+                    </div>
+                  </td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>`}`;
+  openM('m-stock-hist');
+}
+
+function loadLogo(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const src = e.target.result;
+    // Login
+    const loginImg = document.getElementById('login-logo-img');
+    const loginPh  = document.getElementById('login-logo-placeholder');
+    loginImg.src = src;
+    loginImg.style.display = 'block';
+    loginPh.style.display  = 'none';
+    // Sidebar
+    const sbImg = document.getElementById('sidebar-logo-img');
+    const sbPh  = document.getElementById('sidebar-logo-placeholder');
+    sbImg.src = src;
+    sbImg.style.display = 'block';
+    sbPh.style.display  = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+
+// ─── OPENROUTER / AI ASSISTANT ───────────────────
+let aiMessages = [];
+
+function initAI(){
+  const savedKey = localStorage.getItem('openrouter_api_key') || '';
+  const savedModel = localStorage.getItem('openrouter_model') || 'openai/gpt-4o-mini';
+  const keyEl = document.getElementById('or-api-key');
+  const modelEl = document.getElementById('or-model');
+  if(keyEl) keyEl.value = savedKey;
+  if(modelEl) modelEl.value = savedModel;
+  if(keyEl){
+    keyEl.addEventListener('change',()=>{
+      localStorage.setItem('openrouter_api_key', keyEl.value.trim());
+      refreshAIStatus();
+    });
+  }
+  if(modelEl){
+    modelEl.addEventListener('change',()=>{
+      localStorage.setItem('openrouter_model', modelEl.value.trim() || 'openai/gpt-4o-mini');
+    });
+  }
+  aiMessages = [];
+  clearAIChat();
+}
+
+function refreshAIStatus(){
+  const key = (document.getElementById('or-api-key')?.value || '').trim();
+  const status = document.getElementById('ai-status');
+  if(status) status.textContent = key ? 'OpenRouter streaming activado' : 'Modo local listo';
+}
+
+function clearAIChat(){
+  const chat = document.getElementById('ai-chat');
+  if(!chat) return;
+  aiMessages = [];
+  chat.innerHTML = '';
+  addAIMessage('assistant', 'Hola. Puedo ayudarte a localizar recambios, revisar stock y buscar referencias dentro del inventario actual.');
+  addAIMessage('system', 'Sugerencia: añade tu API key de OpenRouter para ver respuestas en streaming. Sin clave, la demo responde usando el inventario local.');
+  refreshAIStatus();
+}
+
+function addAIMessage(role, content){
+  const chat = document.getElementById('ai-chat');
+  if(!chat) return null;
+  const div = document.createElement('div');
+  div.className = 'ai-msg ' + role;
+  div.textContent = content;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  return div;
+}
+
+function updateAIMessage(el, content){
+  if(!el) return;
+  el.textContent = content;
+  const chat = document.getElementById('ai-chat');
+  if(chat) chat.scrollTop = chat.scrollHeight;
+}
+
+function askExample(text){
+  const input = document.getElementById('ai-input');
+  if(!input) return;
+  input.value = text;
+  sendAIMessage();
+}
+
+function normalizeText(value){
+  return (value || '').toString().normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+}
+
+function stockSearch(query){
+  const q = normalizeText(query);
+  const words = q.split(/\s+/).filter(w=>w.length>2);
+  return STOCK.map(item=>{
+    const hay = normalizeText([item.nombre,item.ref,item.ubicacion,item.proveedor,item.unit].join(' '));
+    let score = 0;
+    if(hay.includes(q) && q) score += 10;
+    words.forEach(w=>{ if(hay.includes(w)) score += 2; });
+    if(normalizeText(item.ref) === q) score += 20;
+    return {item, score};
+  }).filter(x=>x.score > 0).sort((a,b)=>b.score-a.score).slice(0,5);
+}
+
+function getLowStock(){
+  return STOCK.filter(s=>s.qty <= s.min).sort((a,b)=>(a.qty-a.min)-(b.qty-b.min));
+}
+
+function formatStockLine(s){
+  return `${s.nombre} (${s.ref}) · stock ${s.qty} ${s.unit} · mínimo ${s.min} · ubicación ${s.ubicacion} · proveedor ${s.proveedor}`;
+}
+
+function buildLocalAnswer(query){
+  const q = normalizeText(query);
+  if(/stock bajo|bajo stock|critico|critico|faltan|faltando/.test(q)){
+    const low = getLowStock();
+    if(!low.length) return 'Ahora mismo no hay recambios por debajo del mínimo.';
+    return 'Estos recambios están en nivel bajo:
+' + low.map(s=>`• ${s.nombre} (${s.ref}): ${s.qty} ${s.unit}, mínimo ${s.min}, ubicación ${s.ubicacion}.`).join('
+');
+  }
+  const matches = stockSearch(query);
+  if(!matches.length) return 'No he encontrado ese recambio en el inventario cargado. Prueba con la referencia exacta o una parte del nombre.';
+  if(/donde|ubicacion|ubicación|esta|está|pasillo|almacen|almacén/.test(q)){
+    const s = matches[0].item;
+    return `${s.nombre} (${s.ref}) está en ${s.ubicacion}. Stock actual: ${s.qty} ${s.unit}. Proveedor: ${s.proveedor}.`;
+  }
+  if(/proveedor/.test(q)){
+    const s = matches[0].item;
+    return `El proveedor de ${s.nombre} (${s.ref}) es ${s.proveedor}. Está ubicado en ${s.ubicacion} y quedan ${s.qty} ${s.unit}.`;
+  }
+  if(/referencia|ref/.test(q)){
+    return matches.map(({item})=>`${item.nombre}: referencia ${item.ref}, ubicación ${item.ubicacion}, stock ${item.qty} ${item.unit}.`).join('
+');
+  }
+  if(/stock|cantidad|cuantas|cuántas|quedan|hay/.test(q)){
+    return matches.map(({item})=>`${item.nombre} (${item.ref}) tiene ${item.qty} ${item.unit} en stock y está en ${item.ubicacion}.`).join('
+');
+  }
+  return 'He encontrado esto en el inventario:
+' + matches.map(({item})=>`• ${formatStockLine(item)}`).join('
+');
+}
+
+function buildInventoryContext(query){
+  const matches = stockSearch(query).map(x=>x.item);
+  const low = getLowStock().slice(0,8);
+  return {
+    matches,
+    context: [
+      'Inventario relevante:',
+      ...(matches.length ? matches.map(formatStockLine) : ['Sin coincidencias directas.']),
+      '',
+      'Stock bajo actual:',
+      ...(low.length ? low.map(formatStockLine) : ['Sin stock bajo.'])
+    ].join('
+')
+  };
+}
+
+async function sendAIMessage(){
+  const input = document.getElementById('ai-input');
+  const btn = document.getElementById('ai-send-btn');
+  if(!input || !btn) return;
+  const text = input.value.trim();
+  if(!text) return;
+  addAIMessage('user', text);
+  input.value = '';
+  btn.disabled = true;
+  const placeholder = addAIMessage('assistant', 'Consultando...');
+
+  const apiKey = (document.getElementById('or-api-key')?.value || '').trim();
+  const model = (document.getElementById('or-model')?.value || '').trim() || 'openai/gpt-4o-mini';
+  localStorage.setItem('openrouter_model', model);
+  if(apiKey) localStorage.setItem('openrouter_api_key', apiKey);
+
+  try {
+    if(!apiKey){
+      updateAIMessage(placeholder, buildLocalAnswer(text));
+      return;
+    }
+    const inventory = buildInventoryContext(text);
+    const systemPrompt = [
+      'Eres un asistente de recambios para una aplicación web de mantenimiento industrial.',
+      'Responde siempre en español.',
+      'Usa únicamente el inventario proporcionado. Si no aparece en el contexto, dilo con claridad.',
+      'Cuando puedas, indica nombre, referencia, ubicación, stock y proveedor.',
+      inventory.context
+    ].join('
+
+');
+
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': window.location.origin || 'http://localhost',
+        'X-Title': 'Demo recambios con OpenRouter'
+      },
+      body: JSON.stringify({
+        model,
+        stream: true,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: text }
+        ]
+      })
+    });
+
+    if(!response.ok || !response.body){
+      const errorText = await response.text();
+      throw new Error(errorText || 'No se pudo conectar con OpenRouter');
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder('utf-8');
+    let buffer = '';
+    let finalText = '';
+
+    while(true){
+      const { value, done } = await reader.read();
+      if(done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('
+');
+      buffer = lines.pop() || '';
+      for(const line of lines){
+        const trimmed = line.trim();
+        if(!trimmed.startsWith('data:')) continue;
+        const data = trimmed.slice(5).trim();
+        if(data === '[DONE]') continue;
+        try{
+          const json = JSON.parse(data);
+          const delta = json.choices?.[0]?.delta?.content || '';
+          if(delta){
+            finalText += delta;
+            updateAIMessage(placeholder, finalText);
+          }
+        }catch(err){
+          console.warn('Chunk no parseable', err);
+        }
+      }
+    }
+
+    if(!finalText){
+      updateAIMessage(placeholder, buildLocalAnswer(text));
+    }
+  } catch(err){
+    console.error(err);
+    updateAIMessage(placeholder, 'No he podido completar la consulta con OpenRouter. Muestro la respuesta local de respaldo:
+
+' + buildLocalAnswer(text));
+  } finally {
+    btn.disabled = false;
+    refreshAIStatus();
+  }
+}
+
+document.addEventListener('keydown', function(e){
+  const input = document.getElementById('ai-input');
+  if(!input) return;
+  if(document.activeElement === input && e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    sendAIMessage();
+  }
+});
+
+</script>
+</body>
+</html>
